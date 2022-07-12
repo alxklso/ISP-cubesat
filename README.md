@@ -6,4 +6,4 @@ This repo contains:
 - PyCubed V1b Battery Board folder (battery-board)
 - PyCubced Flight Software folder (software)
 
-Visit our website to learn more: isomer.space
+Visit our website to learn more: [ISP Website](isomer.space)
