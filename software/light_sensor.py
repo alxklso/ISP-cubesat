@@ -1,5 +1,7 @@
-# file that uses the ALSPT19 Light Sensor
-# to detect ambient light
+# This is a program that uses the ALSPT19 Light Sensor
+# to detect ambient light.
+# Output voltage is printed to console.
+
 import time
 import board
 from digitalio import DigitalInOut, Direction, Pull
