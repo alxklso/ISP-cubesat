@@ -36,7 +36,6 @@ def print_sensor_data(lux1, lux2, lux3, lux4):
 
 # Print out lux (SI) for each sensor indefinitely
 try: 
-    # Writing sensor data to a CSV file 
     # If D5 is shorted with gnd, then the drive is in write-only
     # mode and data can be written to a text file. Sensor data is 
     # also printed to the console. 
