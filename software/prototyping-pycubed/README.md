@@ -1,1 +1,0 @@
-This folder contains programs for prototyping on the PyCubed V05 board.
