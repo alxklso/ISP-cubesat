@@ -18,7 +18,6 @@ import digitalio, sdcardio, pwmio, tasko
 
 # Hardware Specific Libs
 import pycubed_rfm9x # Radio
-import bmx160 # IMU
 import neopixel # RGB LED
 import bq25883 # USB Charger
 import adm1176 # Power Monitor
@@ -70,7 +69,6 @@ class Satellite:
         self.debug=True
         self.micro=microcontroller
         self.hardware = {
-                       'IMU':    False,
                        'Radio1': False,
                        'Radio2': False,
                        'SDcard': False,
@@ -163,13 +161,6 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][Power Monitor]',e)
 
-        # Initialize IMU
-        try:
-            self.IMU = bmx160.BMX160_I2C(self.i2c1)
-            self.hardware['IMU'] = True
-        except Exception as e:
-            if self.debug: print('[ERROR][IMU]',e)
-
         # # Initialize GPS
         # try:
         #     self.gps = GPS(self.uart,debug=False) # still powered off!
@@ -222,8 +213,6 @@ class Satellite:
             self.pwr.__init__(self.i2c1)
         elif dev=='usb':
             self.usb.__init__(self.i2c1)
-        elif dev=='imu':
-            self.IMU.__init__(self.i2c1)
         else:
             print('Invalid Device? ->',dev)
 
@@ -246,26 +235,6 @@ class Satellite:
     def lux4(self):
         if self.hardware('lux4'):
             return self.lux4.lux # lx
-
-    @property
-    def acceleration(self):
-        if self.hardware['IMU']:
-            return self.IMU.accel # m/s^2
-
-    @property
-    def magnetic(self):
-        if self.hardware['IMU']:
-            return self.IMU.mag # uT
-
-    @property
-    def gyro(self):
-        if self.hardware['IMU']:
-            return self.IMU.gyro # deg/s
-
-    @property
-    def temperature(self):
-        if self.hardware['IMU']:
-            return self.IMU.temperature # Celsius
 
     @property
     def RGB(self):
@@ -395,10 +364,6 @@ class Satellite:
             if self.hardware['Radio2']:
                 self.radio2.sleep()
             self.enable_rf.value = False
-            if self.hardware['IMU']:
-                self.IMU.gyro_powermode  = 0x14 # suspend mode
-                self.IMU.accel_powermode = 0x10 # suspend mode
-                self.IMU.mag_powermode   = 0x18 # suspend mode
             if self.hardware['PWR']:
                 self.pwr.config('V_ONCE,I_ONCE')
             if self.hardware['GPS']:
@@ -407,8 +372,6 @@ class Satellite:
 
         elif 'norm' in mode:
             self.enable_rf.value = True
-            if self.hardware['IMU']:
-                self.reinit('IMU')
             if self.hardware['PWR']:
                 self.pwr.config('V_CONT,I_CONT')
             if self.hardware['GPS']:
