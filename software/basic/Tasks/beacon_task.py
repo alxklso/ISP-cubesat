@@ -25,7 +25,7 @@ class task(Task):
             # fake beacon since we don't know if an antenna is attached
             print() # blank line
             self.debug("[WARNING]")
-            self.debug("NOT sending beacon (unknown antenna state)",2)
+            self.deopug("NOT sending beacon (unknown antenna state)",2)
             self.debug("If you've attached an antenna, edit '/Tasks/beacon_task.py' to actually beacon", 2)
             print() # blank line
             self.cubesat.radio1.listen()
