@@ -13,7 +13,6 @@
   2. Adafruit GFX Library -- by Adafruit Version 1.0.2
   3. TimerOne             -- by Jesse Tane et al. Version 1.1.0
 */
-
 #include <SPI.h>
 #include <SD.h>
 #include <EEPROM.h>
@@ -101,13 +100,17 @@ void setup() {
   get_Mode();
   if (Mode == 2) read_from_SD();
   else if (Mode == 3) remove_all_SD();
-  else{setup_files();}
+  else{
+    Serial.println("setting up");
+    setup_files();
+    }
   
   if (MASTER == 1){digitalWrite(6,LOW);}
   analogRead(A0);
   
   
   start_time = millis();
+
 }
 
 void loop() {
@@ -125,8 +128,10 @@ void loop() {
   myFile.println(F("### Comp_date Comp_time Event Ardn_time[ms] ADC[0-1023] SiPM[mV] Deadtime[ms] Temp[C] Name"));
   myFile.println(F("##########################################################################################"));
   myFile.println("Device ID: " + (String)detector_name);
+  Serial.println("written");
    
   write_to_SD();
+  exit(0);
   }
 }
 
@@ -149,11 +154,14 @@ void setup_files(){
           myFile = SD.open(filename, FILE_WRITE); 
           break;  
       }
+      else {
+        Serial.println("file exists");
+      }
    }
 }
 
 void write_to_SD(){ 
-  while (1){
+  while (count < 20){
     if (analogRead(A0) > SIGNAL_THRESHOLD){
       int adc = analogRead(A0);
       
@@ -252,7 +260,6 @@ void read_from_SD(){
     Serial.println("Done...");
     break;
   }
-  
 }
 
 void remove_all_SD() {

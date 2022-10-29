@@ -289,9 +289,9 @@ if mode == 1:
     while True:
         for i in range(nDetectors):
             if globals()['Det%s' % str(i)].inWaiting():
-                data = globals()['Det%s' % str(i)].readline().replace('\r\n', '')  # Wait and read data
+                data = str(globals()['Det%s' % str(i)].readline()).replace('\r\n', '')  # Wait and read data
                 file.write(str(datetime.now()) + " " + data + " " + detector_name_list[i] + '\n')
-                globals()['Det%s' % str(i)].write('got-it')
+                globals()['Det%s' % str(i)].write('got-it'.encode())
 
     for i in range(nDetectors):
         globals()['Det%s' % str(i)].close()
