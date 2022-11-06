@@ -1,3 +1,6 @@
+# Comments: take off the mode choice part when adding it into the PyCubed FSW
+# Change everything to Python3
+
 import glob
 import math
 import multiprocessing
@@ -26,7 +29,7 @@ Based on http://fabacademy.org/archives/2015/doc/WebSocketConsole.html
 '''
 
 
-def print_help1():
+def print_help():
     print('\n===================== HELP =======================')
     print('This code looks through the serial ports. ')
     print('You can select multiple ports with by separating the port number with commas.')
@@ -94,6 +97,12 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         return True
 
 
+def displayAvailSerialPorts():
+    print('Available serial ports:')
+    for i in range(len(port_list)):
+        print('[' + str(i + 1) + '] ' + str(port_list[i]))
+    print('[h] help\n')
+
 def checkQueue():
     while not queue.empty():
         message = queue.get()
@@ -111,114 +120,121 @@ def signal_handler(signal, frame):
 
 
 def serial_ports():
-    """ Lists serial port names
-
+    """ Determines OS and lists serial port names accordingly
         :raises EnvironmentError:
             On unsupported or unknown platforms
         :returns:
             A list of the serial ports available on the system
     """
     if sys.platform.startswith('win'):
+        # windows OS
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # linuxOS or windows Cygwin
         # this excludes your current terminal "/dev/tty"
         ports = glob.glob('/dev/tty[A-Za-z]*')
     elif sys.platform.startswith('darwin'):
+        # macOS
         ports = glob.glob('/dev/tty.*')
     else:
+        # OS cannot be detected
         raise EnvironmentError('Unsupported platform')
         sys.exit(0)
     result = []
-    for port in ports:
+
+    # adds port names to results list
+    for portVal in ports:
         try:
-            s = serial.Serial(port)
+            s = serial.Serial(portVal)
             s.close()
-            result.append(port)
+            result.append(portVal)
         except (OSError, serial.SerialException):
             pass
+    # returns list of portVals, which are populated dependent on OS
     return result
 
 
+# BEGINNING OF MAIN
+# (05 Nov 2022): Changes to make for ISP mission:
+# - Convert to python3.
+# - Remove code accounting for using multiple CWs --> only one CW will be used.
+# - Delete modes 2,3,4: only have the option to record to the computer.
+# - Only have two options:
+#       1 - Save data to computer
+#       2 - Connect to CW server
+# To do next: connect to PyCubed via UART and save to SD on there
 # If the Arduino is not recognized by your MAC, make sure you have
-#   installed the drivers for the Arduino (CH340g driver). Windows and Linux don't need it.
+# installed the drivers for the Arduino (CH340g driver). Windows and Linux don't need it.
 
 print('\n             Welcome to:   ')
 print('CosmicWatch: The Desktop Muon Detector\n')
 
-print("What would you like to do:")
+print("Select an option:")
 print("[1] Record data on the computer")
-print("[2] Copy data files from SD card to your computer")
-print("[3] Remove files from SD card")
-print("[4] Connect to server: www.cosmicwatch.lns.mit.edu")
+print("[2] Connect to server: www.cosmicwatch.lns.mit.edu")
 print("[h] Help")
 
 mode = str(input("\nSelected operation: "))
 
+# print help info if needed
 if mode == 'h':
-    print_help1()
+    print_help()
     sys.exit()
 
 else:
+    # only modes able to be chosen are 1 or 2
     mode = int(mode)
-    if mode not in [1, 2, 3, 4]:
-        print('-- Error --')
-        print('Invalid selection')
+    if mode not in [1, 2]:
+        print('\nError: invalid selection')
         print('Exiting...')
         sys.exit()
 
+# if all is valid, retrieve serial port connections from OS and
+# display serial port connections in console
 port_list = serial_ports()
+displayAvailSerialPorts(port_list)
 
-print('Available serial ports:')
-for i in range(len(port_list)):
-    print('[' + str(i + 1) + '] ' + str(port_list[i]))
-print('[h] help\n')
-
-ArduinoPort = input("Selected Arduino port: ")
-
-ArduinoPort = ArduinoPort.split(',')
-nDetectors = len(ArduinoPort)
-
-if mode in [2, 3, 4]:
-    if len(ArduinoPort) > 1:
-        print('--- Error ---')
-        print('You selected multiple detectors.')
-        print('This options is only compatible when recording to the computer.')
-        print('Exiting...')
-        sys.exit()
+# port selection defined by user.
+# original code allowed for multiple CWs, we are only allowing for one
+portSelection = input("Selected Arduino port: ")
 
 port_name_list = []
 
-for i in range(len(ArduinoPort)):
-    port_name_list.append(str(port_list[int(ArduinoPort[i]) - 1]))
+for i in range(len(portSelection)):
+    port_name_list.append(str(port_list[int(portSelection[i]) - 1]))
 
-if ArduinoPort == 'h':
-    print_help1()
+if portSelection == 'h':
+    print_help()
     sys.exit()
 
-print("The selected port(s) is(are): ")
-for i in range(nDetectors):
-    print('\t[' + str(ArduinoPort[i]) + ']' + port_name_list[i])
+# display selected port
+print("The selected port is: ")
+print('\t[' + str(portSelection) + ']' + port_name_list[0])
 
+# MODE 1: Record data to the computer. CW data is recorded and stored in a location specified by
+# the user. Name of the file can be customized as well.
 if mode == 1:
-    cwd = os.getcwd()
-    fname = input("Enter file name (default: " + cwd + "/CW_data.txt):")
-
+    cwd = os.getcwd()  # get current working dir
+    fileName = input("Enter file name (default: " + cwd + "/CW_data.txt):") # user-defined filename
     detector_name_list = []
 
-    if fname == '':
-        fname = cwd + "/CW_data.txt"
+    # default name is CWD + /CW_data.txt
+    if fileName == '':
+        fileName = cwd + "/CW_data.txt"
 
-    print('Saving data to: ' + fname)
+    print('Saving data to: ' + fileName)
 
-    ComPort_list = np.ones(nDetectors)
+    # creates a singleton np array populated with 1
+    ComPort_list = np.ones(1)
 
+     # iterate through n detectors
     for i in range(nDetectors):
         signal.signal(signal.SIGINT, signal_handler)
-        globals()['Det%s' % str(i)] = serial.Serial(str(port_name_list[i]))
-        globals()['Det%s' % str(i)].baudrate = 9600
-        globals()['Det%s' % str(i)].bytesize = 8  # Number of data bits = 8
-        globals()['Det%s' % str(i)].parity = 'N'  # No parity
-        globals()['Det%s' % str(i)].stopbits = 1
+        globals()['Det%s' % str(0)] = serial.Serial(str(port_name_list[0]))
+        globals()['Det%s' % str(0)].baudrate = 9600
+        globals()['Det%s' % str(0)].bytesize = 8  # Number of data bits = 8
+        globals()['Det%s' % str(0)].parity = 'N'  # No parity
+        globals()['Det%s' % str(0)].stopbits = 1
 
         time.sleep(1)
         # globals()['Det%s' % str(i)].write('write')
@@ -226,13 +242,13 @@ if mode == 1:
         counter = 0
 
         header1 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-        if 'SD initialization failed' in header1:
+        if ('SD initialization failed' in header1):
             print('...SDCard.ino detected.')
             print('...SDcard initialization failed.')
             # This happens if the SDCard.ino is uploaded but it doesn't see an sdcard.
             header1a = str(globals()['Det%s' % str(i)].readline())
             header1 = str(globals()['Det%s' % str(i)].readline())
-        if 'CosmicWatchDetector' in header1:
+        if ('CosmicWatchDetector' in header1):
             print('...SDCard.ino code detected.')
             print('...SDcard intialized correctly.')
             # This happens if the SDCar.ino is uploaded and it sees an sdcard.
@@ -252,7 +268,7 @@ if mode == 1:
             det_name = det_name.split('Device ID: ')[-1]
         detector_name_list.append(det_name)  # Wait and read data
 
-    file = open(fname, "w")
+    file = open(fileName, "w")
     file.write(header1)
     file.write(header2)
     file.write(header3)
@@ -297,98 +313,9 @@ if mode == 1:
         globals()['Det%s' % str(i)].close()
     file.close()
 
+
+# MODE 2: Connect to the CW server. Allows real-time data plotting on www.cosmicwatch.lns.mit.edu.
 if mode == 2:
-
-    cwd = os.getcwd()
-    dir_path = input("\nEnter location to save SD data (default: " + cwd + "/SDFiles):")
-    if dir_path == '':
-        dir_path = cwd + "/SDFiles"
-
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    ComPort = serial.Serial(port_name_list[0])  # open the COM Port
-    ComPort.baudrate = 9600  # set Baud rate
-    ComPort.bytesize = 8  # Number of data bits = 8
-    ComPort.parity = 'N'  # No parity
-    ComPort.stopbits = 1
-
-    if ComPort.readline().strip() == 'CosmicWatchDetector':
-        time.sleep(1)
-        detector_name = ComPort.readline()
-
-        print('\n-- Detector Name --')
-        print(detector_name)
-
-        ComPort.write("read")
-        counter = 0
-
-        while True:
-            data = ComPort.readline()  # Wait and read data
-            # print(data)
-            if 'Done' in data:
-                ComPort.close()
-                sys.exit()
-            elif 'opening:' in data:
-                fname = dir_path + '/' + data.split(' ')[-1].split('.txt')[0] + '.txt'
-
-                print("Saving to: " + fname)
-                file = open(fname, "w", 0)
-                counter = 0
-
-
-            elif 'EOF' in data:
-                file.close()
-
-            else:
-                file.write(data)
-                counter += 1
-
-    else:
-        print('--- Error ---')
-        print('You are trying to read from the SD card.')
-        print('Have you uploaded SDCard.ino to the Arduino?')
-        print('Is there a microSD card inserted into the detector?')
-        print('Exiting ...')
-        sys.exit()
-
-if mode == 3:
-    print("\nAre you sure that you want to remove all files from SD card?")
-    ans = input("Type y or n: ")
-    if ans == 'y' or ans == 'yes' or ans == 'Y' or ans == 'YES':
-        signal.signal(signal.SIGINT, signal_handler)
-        ComPort = serial.Serial(port_name_list[0])  # open the COM Port
-        ComPort.baudrate = 9600  # set Baud rate
-        ComPort.bytesize = 8  # Number of data bits = 8
-        ComPort.parity = 'N'  # No parity
-        ComPort.stopbits = 1
-
-        if ComPort.readline().strip() == 'CosmicWatchDetector':
-            time.sleep(1)
-            ComPort.write("remove")
-            while True:
-                data = ComPort.readline()  # Wait and read data
-                print(data)
-                if data == 'Done...\r\n':
-                    print("Finished deleting files.")
-                    break
-            ComPort.close()
-            sys.exit()
-
-        else:
-            print('--- Error ---')
-            print('You are trying to remove files from the microSD card.')
-            print('Is there an SD card inserted?')
-            print('Do you have the correct code on the Arduino? SDCard.ino')
-            print('Exiting ...')
-            sys.exit()
-
-    else:
-        print("Exiting ...")
-        sys.exit()
-
-if mode == 4:
     bg = DataCollectionProcess(queue)
     # bg.daemon = True
     # bg.start()
