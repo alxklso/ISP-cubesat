@@ -19,27 +19,24 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-'''
-This is a Websocket server that forwards signals from the detector to any client connected.
-It requires Tornado python library to work properly.
-Please run `pip install tornado` with python of version 2.7.9 or greater to install tornado.
-Run it with `python detector-server.py`
-Written by Pawel Przewlocki (pawel.przewlocki@ncbj.gov.pl).
-Based on http://fabacademy.org/archives/2015/doc/WebSocketConsole.html
-'''
+
+# This is a Websocket server that forwards signals from the detector to any client connected.
+# It requires Tornado python library to work properly.
+# Please run `pip install tornado` with python of version 2.7.9 or greater to install tornado.
+# Run it with `python detector-server.py`
+# Written by Pawel Przewlocki (pawel.przewlocki@ncbj.gov.pl).
+# Based on http://fabacademy.org/archives/2015/doc/WebSocketConsole.html
 
 
-def print_help():
-    print('\n===================== HELP =======================')
-    print('This code looks through the serial ports. ')
-    print('You can select multiple ports with by separating the port number with commas.')
-    print('You must select which port contains the Arduino.\n')
-    print('If you have problems, check the following:')
-    print('1. Is your Arduino connected to the serial USB port?\n')
-    print('2. Check that you have the correct drivers installed:\n')
-    print('\tMacOS: CH340g driver (try: https://github.com/adrianmihalko/ch340g-ch34g-ch34x-mac-os-x-driver)')
-    print('\tWindows: no dirver needed')
-    print('\tLinux: no driver needed')
+#===================== HELP =======================
+# This code looks through the serial ports.
+# You must select which port contains the Arduino.
+# If you have problems, check the following:
+# 1. Is your Arduino connected to the serial USB port?
+# 2. Check that you have the correct drivers installed:
+# macOS: CH340g driver (try: https://github.com/adrianmihalko/ch340g-ch34g-ch34x-mac-os-x-driver)
+# Windows: no driver needed
+# Linux: no driver needed
 
 
 clients = []  # list of clients connected
@@ -99,9 +96,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 def displayAvailSerialPorts():
     print('Available serial ports:')
-    for i in range(len(port_list)):
-        print('[' + str(i + 1) + '] ' + str(port_list[i]))
-    print('[h] help\n')
+    for i in range(len(portsList)):
+        print('[' + str(i + 1) + '] ' + str(portsList[i]))
 
 def checkQueue():
     while not queue.empty():
@@ -120,12 +116,10 @@ def signal_handler(signal, frame):
 
 
 def serial_ports():
-    """ Determines OS and lists serial port names accordingly
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
-    """
+    # Determines system OS and retrieves serial port info accordingly
+    # raises EnvironmentError: on unsupported/unknown platforms
+    # returns result: a list of the serial ports available on the system
+
     if sys.platform.startswith('win'):
         # windows OS
         ports = ['COM%s' % (i + 1) for i in range(256)]
@@ -137,21 +131,23 @@ def serial_ports():
         # macOS
         ports = glob.glob('/dev/tty.*')
     else:
-        # OS cannot be detected
+        # if OS cannot be detected, raise EnvironmentError and exit
         raise EnvironmentError('Unsupported platform')
         sys.exit(0)
-    result = []
+
+    # list for storing serial port names
+    portsList = []
 
     # adds port names to results list
     for portVal in ports:
         try:
             s = serial.Serial(portVal)
             s.close()
-            result.append(portVal)
+            portsList.append(portVal)
         except (OSError, serial.SerialException):
             pass
     # returns list of portVals, which are populated dependent on OS
-    return result
+    return portsList
 
 
 # BEGINNING OF MAIN
@@ -168,31 +164,22 @@ def serial_ports():
 
 print('\n             Welcome to:   ')
 print('CosmicWatch: The Desktop Muon Detector\n')
-
 print("Select an option:")
 print("[1] Record data on the computer")
 print("[2] Connect to server: www.cosmicwatch.lns.mit.edu")
-print("[h] Help")
 
 mode = str(input("\nSelected operation: "))
 
-# print help info if needed
-if mode == 'h':
-    print_help()
+# only modes able to be chosen are 1 or 2
+if int(mode) not in [1, 2]:
+    print('\nError: invalid selection')
+    print('Exiting...')
     sys.exit()
-
-else:
-    # only modes able to be chosen are 1 or 2
-    mode = int(mode)
-    if mode not in [1, 2]:
-        print('\nError: invalid selection')
-        print('Exiting...')
-        sys.exit()
 
 # if all is valid, retrieve serial port connections from OS and
 # display serial port connections in console
-port_list = serial_ports()
-displayAvailSerialPorts(port_list)
+portsList = serial_ports()
+displayAvailSerialPorts(portsList)
 
 # port selection defined by user.
 # original code allowed for multiple CWs, we are only allowing for one
@@ -201,11 +188,8 @@ portSelection = input("Selected Arduino port: ")
 port_name_list = []
 
 for i in range(len(portSelection)):
-    port_name_list.append(str(port_list[int(portSelection[i]) - 1]))
+    port_name_list.append(str(portsList[int(portSelection[i]) - 1]))
 
-if portSelection == 'h':
-    print_help()
-    sys.exit()
 
 # display selected port
 print("The selected port is: ")
