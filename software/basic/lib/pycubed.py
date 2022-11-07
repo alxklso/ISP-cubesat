@@ -51,7 +51,7 @@ class Satellite:
 
     # Define NVM flags
     f_lowbatt  = bitFlag(register=_FLAG,bit=0)
-    f_solar    = bitFlag(register=_FLAG,bit=1)
+    f_solar    = bitFlag(register=_FLAG,bit=1)w
     f_gpson    = bitFlag(register=_FLAG,bit=2)
     f_lowbtout = bitFlag(register=_FLAG,bit=3)
     f_gpsfix   = bitFlag(register=_FLAG,bit=4)
