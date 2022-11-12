@@ -2,12 +2,14 @@
 
 from Tasks.template_task import Task
 
+# SET THIS TO TRUE ONLY AFTER ATTACHING ANTENNA TO PYCUBED
 ANTENNA_ATTACHED = False
+
 
 class task(Task):
     priority = 1
-    frequency = 1/30 # once every 30s
-    name='beacon'
+    frequency = 1 / 30  # once every 30s
+    name = 'beacon'
     color = 'teal'
 
     schedule_later = True
@@ -20,14 +22,14 @@ class task(Task):
         """
         if ANTENNA_ATTACHED:
             self.debug("Sending beacon")
-            self.cubesat.radio1.send("Hello World!",keep_listening=True)
+            self.cubesat.radio1.send("Hello World!", keep_listening=True)
         else:
             # Fake beacon since we don't know if an antenna is attached
-            print() # blank line
+            print()
             self.debug("[WARNING]")
-            self.debug("NOT sending beacon (unknown antenna state)",2)
+            self.debug("NOT sending beacon (unknown antenna state)", 2)
             self.debug("If you've attached an antenna, edit '/Tasks/beacon_task.py' to actually beacon", 2)
-            print() # blank line
+            print()
             self.cubesat.radio1.listen()
 
         self.debug("Listening 10s for response (non-blocking)")
@@ -37,11 +39,9 @@ class task(Task):
             response = self.cubesat.radio1.receive(keep_listening=False)
             if response is not None:
                 self.debug("packet received")
-                self.debug('msg: {}, RSSI: {}'.format(response,self.cubesat.radio1.last_rssi-137),2)
-                self.cubesat.c_gs_resp+=1
+                self.debug('msg: {}, RSSI: {}'.format(response, self.cubesat.radio1.last_rssi - 137), 2)
+                self.cubesat.c_gs_resp += 1
         else:
             self.debug('no messages')
         self.cubesat.radio1.sleep()
         self.debug('finished')
-
-

@@ -91,7 +91,7 @@ class Satellite:
         self._chrg = digitalio.DigitalInOut(board.CHRG)
         self._chrg.switch_to_input()
 
-        # Define SPI,I2C,UART
+        # Define SPI,I2C,UART communication protocols
         self.i2c1 = busio.I2C(board.SCL, board.SDA)
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
@@ -114,7 +114,7 @@ class Satellite:
         _rf_rst1.switch_to_output(value=True)
         self.radio1_DIO0.switch_to_input()
 
-        # Initialize SD card (always init SD before anything else on spi bus)
+        # Initialize SD card (always init SD before anything else on SPI bus)
         try:
             # Baud rate depends on the card, 4MHz should be safe
             _sd = sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
@@ -127,7 +127,7 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][SD Card]', e)
 
-        # Initialize Neopixel
+        # Initialize neopixel
         try:
             self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2, pixel_order=neopixel.GRB)
             self.neopixel[0] = (0, 0, 0)
