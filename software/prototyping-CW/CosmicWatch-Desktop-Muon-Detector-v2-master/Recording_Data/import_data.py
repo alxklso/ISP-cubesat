@@ -51,7 +51,7 @@ class DataCollectionProcess(multiprocessing.Process):
         self.comport.baudrate = 9600  # set Baud rate
         self.comport.bytesize = 8  # Number of data bits = 8
         self.comport.parity = 'N'  # No parity
-        self.comport.stopbits = 1
+        self.p.stopbits = 1
 
     def close(self):
         self.comport.close()
