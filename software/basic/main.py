@@ -3,9 +3,9 @@ import lib.tasko as tasko
 from lib.pycubed import cubesat
 
 """
-PyCubed Beep-Sat Demo
+PyCubed Beep-Sat FSW
 M. Holliday
-Edited by: Alex Kelso (Systems Lead @ Isomer Space Program)
+Modified by: Alex Kelso (Systems Lead @ Isomer Space Program)
 """
 
 print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo', lines='-' * 40))
@@ -17,29 +17,33 @@ cubesat.tasko = tasko
 cubesat.scheduled_tasks = {}
 
 print('Loading Tasks...\n')
-# Schedule all tasks in directory
-for file in os.listdir('Tasks'):
-    # remove the '.py' from file name
+
+# Iterate through all tasks in directory
+# Return type of os.listdir is a list of file names
+for file in os.listdir('Tasks'): 
+    # Remove the '.py' extension from file name
     file = file[:-3]
 
-    # ignore these files
+    # Ignore these files
     if file in ("template_task", "test_task", "listen_task") or file.startswith('._'):
         continue
 
-    # auto-magically import the task file
+    # Import statement for each task file is built and executed using built-in exec() function
     exec('import Tasks.{}'.format(file))
-    # create a helper object for scheduling the task
+    # Create a helper object for scheduling the task
     task_obj = eval('Tasks.' + file).task(cubesat)
 
-    # determine if the task wishes to be scheduled later
+    # Determine if the task wishes to be scheduled later
+    # If schedule_later = True, then the task is delayed for one unit of frequency, as 
+    # defined in the task file.
     if hasattr(task_obj, 'schedule_later') and getattr(task_obj, 'schedule_later'):
         schedule = cubesat.tasko.schedule_later
     else:
         schedule = cubesat.tasko.schedule
 
-    # schedule each task object and add it to our dict
+    # Schedule each task object and add it to our dict
     cubesat.scheduled_tasks[task_obj.name] = schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
-print(len(cubesat.scheduled_tasks), 'total')
+print("Total tasks scheduled:", len(cubesat.scheduled_tasks))
 
 print('Running...')
 # runs forever
