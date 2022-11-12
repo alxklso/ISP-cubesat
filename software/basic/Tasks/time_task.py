@@ -6,7 +6,7 @@ import time
 class task(Task):
     priority = 4
     frequency = 1/20 # once every 20s
-    name = 'time'
+    name='time'
     color = 'white'
 
     async def main_task(self):

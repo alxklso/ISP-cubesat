@@ -3,9 +3,9 @@
 from Tasks.template_task import Task
 
 class task(Task):
-    priority = 100
+    priority = 255
     frequency = 2 # twice per second
-    name = 'blink'
+    name='blink'
     color = 'pink'
 
     rgb_on = False

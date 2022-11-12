@@ -5,11 +5,8 @@ CircuitPython Version: 7.0.0 alpha
 Library Repo: https://github.com/pycubed/library_pycubed.py
 
 * Author(s): Max Holliday
-* ISP Contributor(s): Alex Kelso 
 """
-
 # Common CircuitPython Libs
-from ssl import ALERT_DESCRIPTION_UNSUPPORTED_CERTIFICATE
 import board, microcontroller
 import busio, time, sys
 from storage import mount,umount,VfsFat
@@ -18,11 +15,10 @@ import digitalio, sdcardio, pwmio, tasko
 
 # Hardware Specific Libs
 import pycubed_rfm9x # Radio
+import bmx160 # IMU
 import neopixel # RGB LED
 import bq25883 # USB Charger
 import adm1176 # Power Monitor
-import adafruit_veml7700 # Lux sensors (4)
-import adafruit_tca9548a # Multiplexer
 
 # Common CircuitPython Libs
 from os import listdir,stat,statvfs,mkdir,chdir
@@ -51,7 +47,7 @@ class Satellite:
 
     # Define NVM flags
     f_lowbatt  = bitFlag(register=_FLAG,bit=0)
-    f_solar    = bitFlag(register=_FLAG,bit=1)w
+    f_solar    = bitFlag(register=_FLAG,bit=1)
     f_gpson    = bitFlag(register=_FLAG,bit=2)
     f_lowbtout = bitFlag(register=_FLAG,bit=3)
     f_gpsfix   = bitFlag(register=_FLAG,bit=4)
@@ -69,19 +65,14 @@ class Satellite:
         self.debug=True
         self.micro=microcontroller
         self.hardware = {
+                       'IMU':    False,
                        'Radio1': False,
                        'Radio2': False,
                        'SDcard': False,
                        'GPS':    False,
                        'WDT':    False,
                        'USB':    False,
-                       'PWR':    False,
-                       'TCA':    False, 
-                       'lux1':   False,
-                       'lux2':   False,
-                       'lux3':   False,
-                       'lux4':   False}
-
+                       'PWR':    False}
         # Define burn wires:
         self._relayA = digitalio.DigitalInOut(board.RELAY_A)
         self._relayA.switch_to_output(drive_mode=digitalio.DriveMode.OPEN_DRAIN)
@@ -96,11 +87,10 @@ class Satellite:
         self._chrg = digitalio.DigitalInOut(board.CHRG)
         self._chrg.switch_to_input()
 
-        # Define SPI,I2C,UART, and I2C2 (payload)
+        # Define SPI,I2C,UART
         self.i2c1  = busio.I2C(board.SCL,board.SDA)
         self.spi   = board.SPI()
         self.uart  = busio.UART(board.TX,board.RX)
-        self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
 
         # Define GPS
         self.en_gps = digitalio.DigitalInOut(board.EN_GPS)
@@ -161,6 +151,13 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][Power Monitor]',e)
 
+        # Initialize IMU
+        try:
+            self.IMU = bmx160.BMX160_I2C(self.i2c1)
+            self.hardware['IMU'] = True
+        except Exception as e:
+            if self.debug: print('[ERROR][IMU]',e)
+
         # # Initialize GPS
         # try:
         #     self.gps = GPS(self.uart,debug=False) # still powered off!
@@ -183,25 +180,6 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][RADIO 1]',e)
 
-        # Initialize multiplexer and lux sensors 
-        try:
-            # Define and initialize multiplexer using i2c bus
-            self.tca = adafruit_tca9548a.TCA9548A(self.i2c2)
-            self.hardware['TCA'] = True
-
-            # Define and initialize lux sensors (4) through appropriate 
-            # tca multiplexer channels
-            self.lux1 = adafruit_veml7700.VEML7700(self.tca[0])
-            self.hardware['lux1'] = True
-            self.lux2 = adafruit_veml7700.VEML7700(self.tca[1])
-            self.hardware['lux2'] = True
-            self.lux3 = adafruit_veml7700.VEML7700(self.tca[2])
-            self.hardware['lux3'] = True
-            self.lux4 = adafruit_veml7700.VEML7700(self.tca[3])
-            self.hardware['lux4'] = True
-        except Exception as e:
-            if self.debug: print('[ERROR][TCA AND LUX SENSORS]', e)
-
         # set PyCubed power mode
         self.power_mode = 'normal'
 
@@ -213,28 +191,30 @@ class Satellite:
             self.pwr.__init__(self.i2c1)
         elif dev=='usb':
             self.usb.__init__(self.i2c1)
+        elif dev=='imu':
+            self.IMU.__init__(self.i2c1)
         else:
             print('Invalid Device? ->',dev)
 
     @property
-    def lux1(self):
-        if self.hardware('lux1'):
-            return self.lux1.lux # lx
+    def acceleration(self):
+        if self.hardware['IMU']:
+            return self.IMU.accel # m/s^2
 
-    @property 
-    def lux2(self):
-        if self.hardware('lux2'):
-            return self.lux2.lux # lx 
-    
-    @property 
-    def lux3(self):
-        if self.hardware('lux3'):
-            return self.lux3.lux # lx
+    @property
+    def magnetic(self):
+        if self.hardware['IMU']:
+            return self.IMU.mag # uT
 
-    @property 
-    def lux4(self):
-        if self.hardware('lux4'):
-            return self.lux4.lux # lx
+    @property
+    def gyro(self):
+        if self.hardware['IMU']:
+            return self.IMU.gyro # deg/s
+
+    @property
+    def temperature(self):
+        if self.hardware['IMU']:
+            return self.IMU.temperature # Celsius
 
     @property
     def RGB(self):
@@ -364,6 +344,10 @@ class Satellite:
             if self.hardware['Radio2']:
                 self.radio2.sleep()
             self.enable_rf.value = False
+            if self.hardware['IMU']:
+                self.IMU.gyro_powermode  = 0x14 # suspend mode
+                self.IMU.accel_powermode = 0x10 # suspend mode
+                self.IMU.mag_powermode   = 0x18 # suspend mode
             if self.hardware['PWR']:
                 self.pwr.config('V_ONCE,I_ONCE')
             if self.hardware['GPS']:
@@ -372,6 +356,8 @@ class Satellite:
 
         elif 'norm' in mode:
             self.enable_rf.value = True
+            if self.hardware['IMU']:
+                self.reinit('IMU')
             if self.hardware['PWR']:
                 self.pwr.config('V_CONT,I_CONT')
             if self.hardware['GPS']:

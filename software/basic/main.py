@@ -1,8 +1,8 @@
 """
-PyCubed Basic Beep-Sat Demo
+PyCubed Beep-Sat Demo
 
-Original Author: M. Holliday
-Edited by: Alex Kelso (15 June 2022)
+
+M. Holliday
 """
 
 print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo',lines='-'*40))
