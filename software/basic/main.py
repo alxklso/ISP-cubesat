@@ -8,13 +8,13 @@ M. Holliday
 Edited by: Alex Kelso (Systems Lead @ Isomer Space Program)
 """
 
-print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo', lines='-'*40))
+print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo', lines='-' * 40))
 print('Initializing PyCubed Hardware...')
 
 # Create asyncio object
 cubesat.tasko = tasko
 # Dict to store scheduled objects by name
-cubesat.scheduled_tasks={}
+cubesat.scheduled_tasks = {}
 
 print('Loading Tasks...\n')
 # Schedule all tasks in directory
@@ -38,7 +38,7 @@ for file in os.listdir('Tasks'):
         schedule = cubesat.tasko.schedule
 
     # schedule each task object and add it to our dict
-    cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
+    cubesat.scheduled_tasks[task_obj.name] = schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 print(len(cubesat.scheduled_tasks), 'total')
 
 print('Running...')
