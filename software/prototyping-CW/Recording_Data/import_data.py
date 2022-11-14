@@ -191,7 +191,7 @@ for i in range(len(portSelection)):
     port_name_list.append(str(portsList[int(portSelection[i]) - 1]))
 
 
-# display selected port
+# Display selected port
 print("The selected port is: ")
 print('\t[' + str(portSelection) + ']' + port_name_list[0])
 
