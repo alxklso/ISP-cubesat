@@ -1,6 +1,3 @@
-# Comments: take off the mode choice part when adding it into the PyCubed FSW
-# Change everything to Python3
-
 import glob
 import math
 import multiprocessing
@@ -22,10 +19,10 @@ import tornado.websocket
 
 # This is a Websocket server that forwards signals from the detector to any client connected.
 # It requires Tornado python library to work properly.
-# Please run `pip install tornado` with python of version 2.7.9 or greater to install tornado.
 # Run it with `python detector-server.py`
 # Written by Pawel Przewlocki (pawel.przewlocki@ncbj.gov.pl).
 # Based on http://fabacademy.org/archives/2015/doc/WebSocketConsole.html
+# Modified by: Isomer Space Program Software Team (2022)
 
 
 #===================== HELP =======================
@@ -41,7 +38,6 @@ import tornado.websocket
 
 clients = []  # list of clients connected
 queue = multiprocessing.Queue()  # queue for events forwarded from the device
-
 
 class DataCollectionProcess(multiprocessing.Process):
     def __init__(self, queue):
@@ -110,7 +106,6 @@ def checkQueue():
 
 def signal_handler(signal, frame):
     print('You pressed Ctrl+C!')
-    ComPort.close()
     file.close()
     sys.exit(0)
 
@@ -185,15 +180,9 @@ displayAvailSerialPorts(portsList)
 # original code allowed for multiple CWs, we are only allowing for one
 portSelection = input("Selected Arduino port: ")
 
-port_name_list = []
-
-for i in range(len(portSelection)):
-    port_name_list.append(str(portsList[int(portSelection[i]) - 1]))
-
-
 # Display selected port
 print("The selected port is: ")
-print('\t[' + str(portSelection) + ']' + port_name_list[0])
+print('\t[' + str(portSelection) + ']')
 
 # MODE 1: Record data to the computer. CW data is recorded and stored in a location specified by
 # the user. Name of the file can be customized as well.
@@ -208,49 +197,45 @@ if mode == 1:
 
     print('Saving data to: ' + fileName)
 
-    # creates a singleton np array populated with 1
-    ComPort_list = np.ones(1)
+    # Setting up the serial port once connection has been established
+    signal.signal(signal.SIGINT, signal_handler)
+    globals()['Det'] = serial.Serial(str(portSelection))
+    globals()['Det'].baudrate = 9600
+    globals()['Det'].bytesize = 8  # Number of data bits = 8
+    globals()['Det'].parity = 'N'  # No parity
+    globals()['Det'].stopbits = 1
 
-     # iterate through n detectors
-    for i in range(nDetectors):
-        signal.signal(signal.SIGINT, signal_handler)
-        globals()['Det%s' % str(0)] = serial.Serial(str(port_name_list[0]))
-        globals()['Det%s' % str(0)].baudrate = 9600
-        globals()['Det%s' % str(0)].bytesize = 8  # Number of data bits = 8
-        globals()['Det%s' % str(0)].parity = 'N'  # No parity
-        globals()['Det%s' % str(0)].stopbits = 1
+    time.sleep(1)
+    # globals()['Det%s' % str(i)].write('write')
 
-        time.sleep(1)
-        # globals()['Det%s' % str(i)].write('write')
+    counter = 0
 
-        counter = 0
+    header1 = str(globals()['Det'].readline())  # Wait and read data
+    if ('SD initialization failed' in header1):
+        print('...SDCard.ino detected.')
+        print('...SDcard initialization failed.')
+        # This happens if the SDCard.ino is uploaded but it doesn't see an sdcard.
+        header1a = str(globals()['Det%s' % str(i)].readline())
+        header1 = str(globals()['Det%s' % str(i)].readline())
+    if ('CosmicWatchDetector' in header1):
+        print('...SDCard.ino code detected.')
+        print('...SDcard intialized correctly.')
+        # This happens if the SDCar.ino is uploaded and it sees an sdcard.
+        header1a = str(globals()['Det%s' % str(i)].readline())
+        globals()['Det%s' % str(i)].write('write')
+        header1b = str(globals()['Det%s' % str(i)].readline())
+        header1 = str(globals()['Det%s' % str(i)].readline())
+    # header1 = globals()['Det%s' % str(i)].readline()
+    header2 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
+    header3 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
+    header4 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
+    header5 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
 
-        header1 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-        if ('SD initialization failed' in header1):
-            print('...SDCard.ino detected.')
-            print('...SDcard initialization failed.')
-            # This happens if the SDCard.ino is uploaded but it doesn't see an sdcard.
-            header1a = str(globals()['Det%s' % str(i)].readline())
-            header1 = str(globals()['Det%s' % str(i)].readline())
-        if ('CosmicWatchDetector' in header1):
-            print('...SDCard.ino code detected.')
-            print('...SDcard intialized correctly.')
-            # This happens if the SDCar.ino is uploaded and it sees an sdcard.
-            header1a = str(globals()['Det%s' % str(i)].readline())
-            globals()['Det%s' % str(i)].write('write')
-            header1b = str(globals()['Det%s' % str(i)].readline())
-            header1 = str(globals()['Det%s' % str(i)].readline())
-        # header1 = globals()['Det%s' % str(i)].readline()
-        header2 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-        header3 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-        header4 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-        header5 = str(globals()['Det%s' % str(i)].readline())  # Wait and read data
-
-        det_name = str(globals()['Det%s' % str(i)].readline()).replace('\r\n', '')
-        # print(det_name)
-        if 'Device ID: ' in det_name:
-            det_name = det_name.split('Device ID: ')[-1]
-        detector_name_list.append(det_name)  # Wait and read data
+    det_name = str(globals()['Det%s' % str(i)].readline()).replace('\r\n', '')
+    # print(det_name)
+    if 'Device ID: ' in det_name:
+        det_name = det_name.split('Device ID: ')[-1]
+    detector_name_list.append(det_name)  # Wait and read data
 
     file = open(fileName, "w")
     file.write(header1)
