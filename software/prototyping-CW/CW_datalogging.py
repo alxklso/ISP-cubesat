@@ -1,5 +1,7 @@
 import serial,time,sys,glob
 
+# global variable
+f = open("cw_data.txt", "w")
 
 def serial_ports():
     #This is a function that gets a list of port names from the OS and returns it
@@ -62,14 +64,27 @@ def main():
     # port, baudrate, timeout
     arduino = serial.Serial(port=portName, baudrate=9600, timeout=.1)
 
+    # Ask the user if they would like to write CW data to a file
+    writeToFileFlag = True # if True, write to file 
+    writeToFile = input("Would you like to write the data to a file? [y/n] ")
+    if writeToFile.lower() == "n":
+        writeToFileFlag = False
+    
     # Only display data from serial port device in console if the
     # raw byte string is non-empty
     while True:
         time.sleep(0.05)
         data = arduino.readline()
         if len(data) > 0:
-            print(str(data.decode("utf-8")))
+            decodedData = data.decode("utf-8")
+            print(decodedData)
+            if writeToFileFlag:
+                f.write(decodedData)
 
 
 # Run main program
-main()
+try:
+    main()
+except KeyboardInterrupt:
+    print("\nProgram killed by user.")
+    f.close()
