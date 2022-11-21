@@ -6,5 +6,6 @@ This repo contains:
 - PyCubed V1b Battery Board folder (battery-board)
 - PyCubed Flight Software folder (software)
 - Datasheets for components folder (datasheets)
+- Cosmic Watch (payload) folder (cosmic-watch)
 
 Visit our website to learn more: [ISP Website](https://isomer.space)
