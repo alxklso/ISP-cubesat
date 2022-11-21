@@ -16,13 +16,8 @@ veml7700 = adafruit_veml7700.VEML7700(i2c)
 # try creating text file for writing lux data in
 # new measurement for each line in txt file
 try:
-    with open('/lux_data.txt','w') as f:
-        while True:
-            print("Ambient light (SI lux):", veml7700.lux)
-            f.write(str(veml7700.lux)+ '\n')
-            f.flush()
-            led.value = not led.value
-            time.sleep(1)
+    while True:
+        print('Ambient light (SI lux):', veml7700.lux)
 
 # if OS error occurs
 except OSError as e:

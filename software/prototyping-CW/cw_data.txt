@@ -1,8 +1,0 @@
-##########################################################################################
-### CosmicWatch: The Desktop Muon Detector
-### Questions? saxani@mit.edu
-### Comp_date Comp_time Event Ardn_time[ms] ADC[0-1023] SiPM[mV] Deadtime[ms] Temp[C] Name
-##########################################################################################
-Leonardo
-1 1360 113 23.02 558 34.76
-2 2233 216 36.85 745 42.38

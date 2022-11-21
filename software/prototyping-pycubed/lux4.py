@@ -6,12 +6,13 @@
 # console for each sensor with a frequency of 1Hz.
 import time
 import board
+from pycubed import cubesat
 import adafruit_veml7700 # lux sensor
 import adafruit_tca9548a # multiplexer
 
 
 # Create I2C bus
-i2c = board.I2C()
+i2c = board.I2C(board.SCL2, board.SDA2)
 
 # Create the TCA9548A object and give it the I2C bus
 tca = adafruit_tca9548a.TCA9548A(i2c)
