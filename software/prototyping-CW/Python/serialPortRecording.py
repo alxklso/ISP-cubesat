@@ -1,18 +1,5 @@
 import serial
 
-"""
-This is a script that listens to the serial port and displays to the 
-data in the console with the option of creating and writing data to a
-file. The data is sent from the Cosmic Watch sensor via the UART pins
-on the Arduino Nano board to the serial port on your computer.
-
-Notes:
-- Serial port currently in place is for Mac, may need to change depending 
-on OS and computer
-- A USB-TTL adapter, breadboard, and extra wires were used to connect the 
-Nano to the computer. 
-"""
-
 def displayMenu():
     """Ask the user if they would like to file or 
     only display to console
@@ -25,6 +12,20 @@ def displayMenu():
 
 # Driver code
 def main():
+
+    """
+    This is a script that listens to the serial port and displays to the 
+    data in the console with the option of creating and writing data to a
+    file. The data is sent from the Cosmic Watch sensor via the UART pins
+    on the Arduino Nano board to the serial port on your computer.
+
+    Notes:
+    - Serial port currently in place is for Mac, may need to change depending 
+    on OS and computer
+    - A USB-TTL adapter, breadboard, and extra wires were used to connect the 
+    Nano to the computer. 
+    """
+    
     # Connect to serial port (change val according to OS and device)
     ser = serial.Serial("/dev/tty.usbserial-0001") 
 
