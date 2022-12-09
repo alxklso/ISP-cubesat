@@ -2,6 +2,8 @@
 # Enter REPL for PyCubed: screen /dev/tty.[serial port ID]
 # NOTE: MUST DRAG AND DROP THIS FILE TO PYCUBED DRIVE WHEN PLUGGED IN
 # BEFORE RUNNING. THIS FILE WILL NOT RUN IF ACCESSED FROM LOCAL GIT REPO CLONE
+# View all serial port connections: ls /dev/tty.*
+# Enter REPL for PyCubed: screen /dev/tty.[serial port ID]
 
 from lib.pycubed import cubesat
 import time, busio, board  
@@ -19,12 +21,13 @@ def main():
             time.sleep(1)
 
     print("SD card found! Attempting to write to file...")
-    fp = open("/sd/test.txt", "w") # Create the test.txt on the PyCubed SD card
+    fp = open("/sd/cw_data.txt", "w") # Create the test.txt on the PyCubed SD card
 
     try:
         # UART setup
         uart2 = busio.UART(board.TX2, board.RX2)
 
+        # Record data indefinitely
         while True:
             data = uart2.read()
             if data:
@@ -44,7 +47,8 @@ def main():
                 # if no data can be heard from UART pins
                 print("No data detected!")
 
-    # If there is some error display it to console
+    # If there is some error, display it to console
+    # Also close file to save any data already recorded
     except Exception as e:
         print(e)
         fp.close()
