@@ -95,6 +95,7 @@ class Satellite:
         self.i2c1 = busio.I2C(board.SCL, board.SDA)
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
+        self.uart2 = busio.UART(board.TX2, board.RX2) # UART pins for payload (CW)
 
         # Define GPS
         self.en_gps = digitalio.DigitalInOut(board.EN_GPS)
@@ -158,14 +159,6 @@ class Satellite:
             if self.debug:
                 print('[ERROR][Power Monitor]', e)
 
-        # # Initialize GPS
-        # try:
-        #     self.gps = GPS(self.uart,debug=False) # still powered off!
-        #     self.gps.timeout_handler=self.timeout_handler
-        #     self.hardware['GPS'] = True
-        # except Exception as e:
-        #     if self.debug: print('[ERROR][GPS]',e)
-
         # Initialize radio #1 - UHF
         try:
             self.radio1 = pycubed_rfm9x.RFM9x(self.spi, _rf_cs1, _rf_rst1,
@@ -180,7 +173,7 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][RADIO 1]', e)
 
-        # set PyCubed power mode
+        # Set PyCubed power mode
         self.power_mode = 'normal'
 
     def reinit(self, dev):

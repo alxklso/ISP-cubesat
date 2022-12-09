@@ -1,3 +1,5 @@
+# Viewing all serial ports command: ls /dev/tty.*
+
 import serial
 
 def displayMenu():

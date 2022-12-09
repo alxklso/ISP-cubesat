@@ -11,15 +11,11 @@ To learn more about the Cosmic watch, visit go to https://http://www.cosmicwatch
 
 class task(Task):
     priority = 10  # low priority, preempted by everything except LED
-    frequency = 1 / 60  # once every 60 seconds
+    frequency = 1 / 600  # once every 10 minutes, we listen to the UART pins
     name = 'cosmic watch'
     color = 'gray'
 
-    """
-    Setting schedule_later = True tells the state machine to skip the first iteration
-    (1 unit of frequency defined above) of the task.
-    schedule_later = True
-    """
+    # State machine skips first iteration of the task
     schedule_later = True
 
     async def main_task(self):
@@ -28,7 +24,17 @@ class task(Task):
         Cosmic Watch script which initiates the Arduino code. Interfacing between the PyCubed and the Cosmic
         Watch is done through the payload terminals, using UART.
         """
+        # Listen to uart2 pins 
+        data = self.cubesat.uart2.read()
 
+        
+        if data:
+            # If buffer length is nonzero (there is data), decode
+            # and print to console
+            dataDecoded = data.decode("utf-8")
+            fp.write(dataDecoded)
+
+        # Debugging section
         self.debug('test start: {}'.format(time.monotonic()))
         await self.cubesat.tasko.sleep(10)
         self.debug('test stop: {}'.format(time.monotonic()))
