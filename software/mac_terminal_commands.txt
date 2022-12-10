@@ -1,0 +1,33 @@
+THIS FILE CONTAINS COMMONLY USED TERMINAL COMMANDS
+MOST ARE MACOS EXCLUSIVE
+
+SERIAL PORT
+---------------------------------------------
+Displaying all serial port connections:
+- ls /dev/tty.*
+
+Connecting to device through serial port (accessing REPL):
+- screen /dev/tty.[BOARD_NAME 115200]
+
+TERMINAL
+---------------------------------------------
+Change directory:
+- cd [DIRECTORY_NAME]
+
+Move up in directory:
+- cd ..
+
+Show all items in current working directory (CWD):
+- ls
+
+
+PUSHING TO GIT
+---------------------------------------------
+- git add [MODIFIED FILES, "." for "all"] 
+- git commit -m "[COMMIT_MESSAGE]
+- git push
+
+
+CLONING GIT REPO
+---------------------------------------------
+- git clone [REPO_URL]

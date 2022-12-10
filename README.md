@@ -1,11 +1,12 @@
 # ISP-cubesat
-This is the repo for the Isomer Space Program (ISP) 1U CubeSat mission.
+This is the repo for the Isomer Space Program (ISP) 1U CoyoteSat CubeSat mission.
 
 This repo contains:
-- PyCubed V5 Mainboard folder (main-board)
-- PyCubed V1b Battery Board folder (battery-board)
-- PyCubed Flight Software folder (software)
-- Datasheets for components folder (datasheets)
-- Cosmic Watch (payload) folder (cosmic-watch)
+- [main-board]: PyCubed V5 Mainboard  
+- [batt-board]: PyCubed V1b Battery Board
+- [software]: PyCubed Flight Software  
+- [datasheets]: Datasheets for components 
+- [cosmic-watch]: Cosmic Watch (payload)
+- [requirements-docs]: Requirements documents that our mission shall comply with
 
 Visit our website to learn more: [ISP Website](https://isomer.space)

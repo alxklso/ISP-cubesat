@@ -1,6 +1,0 @@
-Checking serial port connections:
-- ls /dev/tty.*
-
-Connecting to microcontroller through serial port:
-- screen /dev/tty.board_name 115200
-
