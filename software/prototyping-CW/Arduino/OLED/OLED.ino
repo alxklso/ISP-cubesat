@@ -42,8 +42,6 @@ const int cal_max = 1023;
 Adafruit_SSD1306 display(OLED_RESET);
 
 //initialize variables
-char detector_name[40];
-
 unsigned long time_stamp                      = 0L;
 unsigned long measurement_deadtime            = 0L;
 unsigned long time_measurement                = 0L;      // Time stamp
@@ -95,22 +93,15 @@ void setup() {
   else {delay(2000);}
   digitalWrite(3,LOW);
   if (MASTER == 1) {digitalWrite(6, LOW);}
-
-  Serial.println(F("##########################################################################################"));
-  Serial.println(F("### CosmicWatch: The Desktop Muon Detector"));
-  Serial.println(F("### Questions? saxani@mit.edu"));
-  Serial.println(F("### Comp_date Comp_time Event Ardn_time[ms] ADC[0-1023] SiPM[mV] Deadtime[ms] Temp[C] Name"));
-  Serial.println(F("##########################################################################################"));
-
-  get_detector_name(detector_name);
-  Serial.println(detector_name);
+  
   get_time();
   delay(900);
   start_time = millis();
   
   Timer1.initialize(TIMER_INTERVAL);             // Initialise timer 1
   Timer1.attachInterrupt(timerIsr);              // attach the ISR routine
-  
+
+  Serial.println("Setup Finished");
 }
 
 void loop()
@@ -131,7 +122,6 @@ void loop()
       analogRead(A3);
       
       // If Slave, check for signal from Master
-      
       if (SLAVE == 1){
           if (digitalRead(6) == HIGH){
               keep_pulse = 1;
@@ -222,7 +212,7 @@ void get_time()
   display.println((String) ((interrupt_timer - start_time) / 1000 / 3600) + ":" + min_char + ":" + sec_char);
 
   if (count == 0) {
-    display.println("Hi, I'm "+(String)detector_name);
+    display.println("count is 0");
     }
       //if (MASTER == 1) {display.println(F("::---  MASTER   ---::"));}
       //if (SLAVE  == 1) {display.println(F("::---   SLAVE   ---::"));}}
@@ -275,23 +265,4 @@ float get_sipm_voltage(float adc_value)
     voltage += cal[i] * pow(adc_value,(sizeof(cal)/sizeof(float)-i-1));
     }
     return voltage;
-}
-
-// This function reads the EEPROM to get the detector ID
-boolean get_detector_name(char* det_name) 
-{
-    byte ch;                              // byte read from eeprom
-    int bytesRead = 0;                    // number of bytes read so far
-    ch = EEPROM.read(bytesRead);          // read next byte from eeprom
-    det_name[bytesRead] = ch;               // store it into the user buffer
-    bytesRead++;                          // increment byte counter
-
-    while ( (ch != 0x00) && (bytesRead < 40) && ((bytesRead) <= 511) ) 
-    {
-        ch = EEPROM.read(bytesRead);
-        det_name[bytesRead] = ch;           // store it into the user buffer
-        bytesRead++;                      // increment byte counter
-    }
-    if ((ch != 0x00) && (bytesRead >= 1)) {det_name[bytesRead - 1] = 0;}
-    return true;
 }
