@@ -46,7 +46,12 @@ for file in os.listdir('Tasks'):
     cubesat.scheduled_tasks[task_obj.name] = schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 
 
-# Show number of tasks scheduled to run and run the queue forever
-print("Total tasks scheduled:", len(cubesat.scheduled_tasks))
-print('Running...')
+# Show all tasks scheduled to run and task count
+print("\nTasks scheduled to run (count: {})".format(len(cubesat.scheduled_tasks)))
+print("-"*50)
+for task_key, task_value in cubesat.scheduled_tasks.items():
+    print(task_key + " -- " + str(task_value))
+
+# Run forever
+print('\nRunning...')
 cubesat.tasko.run()
