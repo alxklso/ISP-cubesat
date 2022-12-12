@@ -16,7 +16,7 @@ class task(Task):
     color = 'gray'
 
     # State machine skips first iteration of the task
-    schedule_later = True
+    schedule_later = False
 
     async def main_task(self):
         """
@@ -26,6 +26,11 @@ class task(Task):
         the payload bus, using UART.
         """
 
+        # Debugging statements
+        print("\nInside cosmicWatch.py")
+        print("Recording data now\n")
+
+
         # Create the test.txt on the PyCubed SD card
         with open("/sd/cw_data.txt", "a") as fp:
             # Get time that the task starts at
@@ -34,7 +39,7 @@ class task(Task):
             # Continuously record data until 60 seconds later 
             while (time.time()-start) < 60:
                 # Listen to uart2 pins 
-                data = self.cubesat.uart.read()
+                data = self.cubesat.uart2.read()
 
                 if data:
                     # If buffer length is nonzero (there is data), decode
@@ -45,6 +50,7 @@ class task(Task):
             
             # When time is up, close the file.
             fp.close()
+            print("File closed, now need to exit the task")
 
         # Debugging section
         self.debug('test start: {}'.format(time.monotonic()))

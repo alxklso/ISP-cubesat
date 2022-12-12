@@ -97,7 +97,7 @@ class Satellite:
         self.i2c1 = busio.I2C(board.SCL, board.SDA)
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
-        #self.uart2 = busio.UART(board.TX2, board.RX2) # UART pins for payload (CW)
+        self.uart2 = busio.UART(board.TX2, board.RX2) # UART pins for payload (CW)
 
         # Define GPS
         self.en_gps = digitalio.DigitalInOut(board.EN_GPS)
