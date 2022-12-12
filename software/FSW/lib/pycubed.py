@@ -4,7 +4,7 @@ PyCubed Hardware Version: mainboard-v05
 CircuitPython Version: 7.0.0 alpha
 Library Repo: https://github.com/pycubed/library_pycubed.py
 
-* Author(s): Max Holliday
+* Author(s): Max Holliday, ISP Software Team
 """
 # Common CircuitPython Libs
 import board
@@ -19,18 +19,19 @@ import sdcardio
 import pwmio
 import tasko
 
+# Common CircuitPython Libs
+from os import listdir, stat, statvfs, mkdir, chdir
+from bitflags import bitFlag, multiBitFlag, multiByte
+from micropython import const
+
 # Hardware Specific Libs
 import pycubed_rfm9x  # Radio
 import neopixel  # RGB LED
 import bq25883  # USB Charger
 import adm1176  # Power Monitor
 
-# Common CircuitPython Libs
-from os import listdir, stat, statvfs, mkdir, chdir
-from bitflags import bitFlag, multiBitFlag, multiByte
-from micropython import const
 
-# NVM register numbers
+# Non-volatile memory (NVM) register numbers
 _BOOTCNT = const(0)
 _VBUSRST = const(6)
 _STATECNT = const(7)
@@ -42,6 +43,7 @@ _FLAG = const(16)
 SEND_BUFF = bytearray(252)
 
 
+# SATELLITE CLASS
 class Satellite:
     # General NVM counters
     c_boot = multiBitFlag(register=_BOOTCNT, lowest_bit=0, num_bits=8)

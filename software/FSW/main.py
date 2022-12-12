@@ -28,7 +28,8 @@ for file in os.listdir('Tasks'):
     if file in ("template_task", "test_task", "listen_task") or file.startswith('._'):
         continue
 
-    # Import statement for each task file is built and executed using built-in exec() function
+    # Import statement for each task file is built and executed using built-in
+    # exec()function
     exec('import Tasks.{}'.format(file))
     # Create a helper object for scheduling the task
     task_obj = eval('Tasks.' + file).task(cubesat)
@@ -43,8 +44,9 @@ for file in os.listdir('Tasks'):
 
     # Schedule each task object and add it to our dict
     cubesat.scheduled_tasks[task_obj.name] = schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
-print("Total tasks scheduled:", len(cubesat.scheduled_tasks))
 
+
+# Show number of tasks scheduled to run and run the queue forever
+print("Total tasks scheduled:", len(cubesat.scheduled_tasks))
 print('Running...')
-# runs forever
 cubesat.tasko.run()
