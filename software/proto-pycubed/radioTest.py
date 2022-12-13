@@ -1,13 +1,40 @@
-import board, busio, digitalio
-import pycubed_rfm9x
+import time
+import os
+from lib.pycubed import cubesat
 
-# Configure pins and SPI bus
-CS= digitalio.DigitalInOut(board.D5)
-RESET= digitalio.DigitalInOut(board.D6)
-spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+"""
+PyCubed script that sends data from the SD card through radio.
+PyCubed radio must be transmitting to another RFM9x breakout board.
+Radio sends data from file one line at a time (needs to be modified later
+according to transmitter capacity).
+"""
 
-# Initialize RFM radio
-rfm9x = pycubed_rfm9x.RFM9x(spi,CS,RESET,433.0,code_rate=8,baudrate=1320000)
-rfm9x.enable_crc=True
+if cubesat.hardware['Radio1'] and cubesat.hardware['SDcard']:
+    # If there is a radio and an SD card, access the contents of the
+    # SD card and send the file data one line at a time
 
-rfm9x.send('Hi BeepSat!')
+    # For viewing all files in SD card
+    # print(os.listdir("/sd"))
+
+    try:
+        # Attempt to open file in read mode 
+        # file name may need to be changed 
+        file = open("/sd/new_cw_data.txt", "r")
+
+        print("Opening file and sending data:")
+        print("-"*50)
+        while len(file.readline()) > 0:
+            fileLine = file.readline()
+            cubesat.radio1.send(fileLine)
+            print(fileLine)
+            time.sleep(2)
+        
+        print("Data sent successfully!")
+
+    except Exception as e:
+        print(e)
+
+else:
+    print("No radio or SD card found!")
+
+print("Done.")

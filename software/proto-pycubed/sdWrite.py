@@ -1,9 +1,5 @@
 # View all serial port connections: ls /dev/tty.*
 # Enter REPL for PyCubed: screen /dev/tty.[serial port ID]
-# NOTE: MUST DRAG AND DROP THIS FILE TO PYCUBED DRIVE WHEN PLUGGED IN
-# BEFORE RUNNING. THIS FILE WILL NOT RUN IF ACCESSED FROM LOCAL GIT REPO CLONE
-# View all serial port connections: ls /dev/tty.*
-# Enter REPL for PyCubed: screen /dev/tty.[serial port ID]
 
 from lib.pycubed import cubesat
 import time, busio, board  
