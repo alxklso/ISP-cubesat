@@ -18,13 +18,5 @@ Naming.ino:
 	Simply replace the det_name variable with your desired detector name and upload the code. 
 	The name will be permanently written to the EEPROM, until this code is run again.
 
-OLED.ino
-	This is the code to run the OLED screen. 
-	You can also use the coincidence connection on the back.
-	It also works with a temperature sensor.
-
-SDcard.ino
-	This operates the same as the OLED.ino code. 
-	Instead of running the OLED screen, we run the microSD card reader/writer. 
-	We cannot run both the OLED and the microSd card reader/writer at the same time.
-	This is due to the limited flash storage space and ram on the Arduino Nano.
+space.ino
+	This code records sipm voltage and sends the data through the Nano's serial port.
