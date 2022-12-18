@@ -55,9 +55,7 @@ class Satellite:
     # Define NVM flags
     f_lowbatt = bitFlag(register=_FLAG, bit=0)
     f_solar = bitFlag(register=_FLAG, bit=1)
-    f_gpson = bitFlag(register=_FLAG, bit=2)
     f_lowbtout = bitFlag(register=_FLAG, bit=3)
-    f_gpsfix = bitFlag(register=_FLAG, bit=4)
     f_shtdwn = bitFlag(register=_FLAG, bit=5)
 
     def __init__(self):
@@ -73,9 +71,7 @@ class Satellite:
         self.micro = microcontroller
         self.hardware = {
             'Radio1': False,
-            'Radio2': False,
             'SDcard': False,
-            'GPS': False,
             'WDT': False,
             'USB': False,
             'PWR': False}
@@ -98,10 +94,6 @@ class Satellite:
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
         self.uart2 = busio.UART(board.TX2, board.RX2) # UART pins for payload (CW)
-
-        # Define GPS
-        self.en_gps = digitalio.DigitalInOut(board.EN_GPS)
-        self.en_gps.switch_to_output()
 
         # Define filesystem stuff
         self.logfile = "/log.txt"
@@ -180,9 +172,7 @@ class Satellite:
 
     def reinit(self, dev):
         dev = dev.lower()
-        if dev == 'gps':
-            self.gps.__init__(self.uart, debug=False)
-        elif dev == 'pwr':
+        if dev == 'pwr':
             self.pwr.__init__(self.i2c1)
         elif dev == 'usb':
             self.usb.__init__(self.i2c1)
@@ -316,21 +306,15 @@ class Satellite:
             self.neopixel.brightness = 0
             if self.hardware['Radio1']:
                 self.radio1.sleep()
-            if self.hardware['Radio2']:
-                self.radio2.sleep()
             self.enable_rf.value = False
             if self.hardware['PWR']:
                 self.pwr.config('V_ONCE,I_ONCE')
-            if self.hardware['GPS']:
-                self.en_gps.value = False
             self.power_mode = 'minimum'
 
         elif 'norm' in mode:
             self.enable_rf.value = True
             if self.hardware['PWR']:
                 self.pwr.config('V_CONT,I_CONT')
-            if self.hardware['GPS']:
-                self.en_gps.value = True
             self.power_mode = 'normal'
             # don't forget to reconfigure radios, gps, etc...
 
