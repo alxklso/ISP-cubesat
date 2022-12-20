@@ -6,7 +6,7 @@
   <img width="700" src="https://github.com/pycubed/documentation/blob/master/images/PyCubed_batteryboard-v01.jpg">
 </p>
 
-2S3P Li-ion battery pack for CubeSat designs.
+2S2P Li-ion battery pack for CubeSat designs.
    - Fits 18650 cells (like the LG INR18650-MJ1)
    - Meets maximum capacity requirements of common CubeSat integrators
    - Uses components with radiation testing heritage
@@ -16,10 +16,6 @@
          - short-circuit
          - excess discharge-current
          - excess charge-current
-
-Tested against the following flight requirement documents:
-(the cells you use play a big role here)
-   - TBA
 
 ## Interactive Bill of Materials 🛒
 - [batteryboard-v01](https://pycubed.github.io/hardware/batteryboard-v01)
