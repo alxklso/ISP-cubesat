@@ -694,7 +694,7 @@
   (gr_text "MOMOBOT" (at 111.75 88.2) (layer "F.SilkS") (tstamp 23127c76-a3da-49fa-9e12-ccabb83e2aa8)
     (effects (font (size 1 1) (thickness 0.25)))
   )
-  (gr_text "Solar Cell" (at 112.35 120.85) (layer "F.SilkS") (tstamp 990f8edd-2e37-4b8d-a25e-5b70b01e5c93)
+  (gr_text "Solar Cell" (at 111.85 120.75) (layer "F.SilkS") (tstamp 990f8edd-2e37-4b8d-a25e-5b70b01e5c93)
     (effects (font (size 1 1) (thickness 0.25)))
   )
   (dimension (type aligned) (layer "Dwgs.User") (tstamp 303d95ac-6f74-4cc7-bb99-b66d8acbc76f)
