@@ -1,6 +1,6 @@
 (kicad_sch (version 20211123) (generator eeschema)
 
-  (uuid c1aa85d4-07f7-48c4-9712-f94036b728d7)
+  (uuid 6a3444d9-dce3-46a9-873a-b52aaa4dd9ab)
 
   (paper "A4")
 
@@ -17,7 +17,7 @@
 
   (text "PyCubed" (at 212.09 177.8 0)
     (effects (font (size 5.08 5.08) (thickness 1.016) bold) (justify left bottom))
-    (uuid da7f0429-d590-4851-8391-2424958dcc2b)
+    (uuid c18b84ab-1138-4188-a341-26f18542693d)
   )
 
   (sheet (at 34.29 67.31) (size 30.48 20.32) (fields_autoplaced)
