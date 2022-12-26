@@ -1,2 +1,8 @@
 **/.DS_Store
 **/__pycache__
+
+
+**/.kicad_prl
+**/fp-info-cache
+**/solar-cell-pcbs-burn-wire-backups/
+**/solar-cell-pcbs-burn-wire-vertical-backups/
