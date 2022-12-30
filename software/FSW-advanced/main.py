@@ -1,7 +1,7 @@
 import os
 import time
-import lib.tasko as tasko
 import traceback
+import lib.tasko as tasko
 from lib.pycubed import cubesat
 
 
@@ -37,12 +37,12 @@ def hardReset():
 
 print('Initializing PyCubed...')
 # Create asyncio object
-cubesat.tasko=tasko
+cubesat.tasko = tasko
 # Dict to store scheduled objects by name
 cubesat.scheduled_tasks={}
 
 # Schedule all tasks in Tasks directory
-print('Loading Tasks...', end='')
+print('Loading Tasks...', end = '')
 for file in os.listdir('Tasks'):
     # Remove py extension from file name
     file = file[:-3]

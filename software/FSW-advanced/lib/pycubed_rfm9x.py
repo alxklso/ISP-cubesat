@@ -1,6 +1,8 @@
-# SPDX-FileCopyrightText: 2017 Tony DiCola for Adafruit Industries
-#
-# SPDX-License-Identifier: MIT
+import time
+from random import random
+import digitalio
+from micropython import const
+import adafruit_bus_device.spi_device as spidev
 
 """
 MODIFIED VERSION of adafruit_rfm9x CircuitPython Library for PyCubed Use
@@ -10,11 +12,7 @@ CircuitPython Version: 7.0.0 alpha
 Library Repo: https://github.com/pycubed/library_pycubed.py
 * Edits by: Max Holliday
 """
-import time
-from random import random
-import digitalio
-from micropython import const
-import adafruit_bus_device.spi_device as spidev
+
 
 # pylint: disable=bad-whitespace
 # Internal constants:

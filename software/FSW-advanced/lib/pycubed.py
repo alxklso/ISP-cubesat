@@ -1,6 +1,7 @@
 """
 CircuitPython driver for PyCubed satellite board
 """
+
 # Common CircuitPython Libs
 import board, microcontroller
 import busio, time, sys
@@ -15,7 +16,7 @@ import bq25883 # USB Charger
 import adm1176 # Power Monitor
 
 # Common CircuitPython Libs
-from os import listdir,stat,statvfs,mkdir,chdir
+from os import listdir, stat, statvfs, mkdir, chdir
 from bitflags import bitFlag,multiBitFlag,multiByte
 from micropython import const
 
