@@ -1,71 +1,90 @@
-"""
-PyCubed Beep-Sat Demo (advanced)
-    - improved fault handling & tolerance
-    - low power mode
-    - logging data to sd card
-    - over the air commands
-
-
-M. Holliday
-Edited By: ISP Software Team
-"""
-
-print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo',lines='-'*40))
-
-print('Initializing PyCubed Hardware...')
 import os
+import time
 import lib.tasko as tasko
 import traceback
 from lib.pycubed import cubesat
 
-# create asyncio object
+
+"""
+FSW Main written by the ISP Software Team. Creates a queue of tasks from Tasks 
+folder and runs them according to task class attributes (priority, frequency). 
+Includes fault-handling and hard reset for PyCubed if needed.
+
+"""
+
+
+############# HELPER FUNCTIONS START ############# 
+
+def showScheduledTasks():
+    # Show all tasks scheduled to run and task count
+    print("\nTasks scheduled to run (count: {})".format(len(cubesat.scheduled_tasks)))
+    print("-"*50)
+    for task_key, task_value in cubesat.scheduled_tasks.items():
+        print(task_key + " -- " + str(task_value))
+
+def hardReset():
+    # If all other fault-handling fails, hard reset the PyCubed
+    print('Engaging fail-safe: hard reset')
+    time.sleep(10)
+    cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
+    cubesat.micro.reset()
+
+############# HELPER FUNCTIONS END ############# 
+
+
+
+############# MAIN PORTION START ############# 
+
+print('Initializing PyCubed...')
+# Create asyncio object
 cubesat.tasko=tasko
 # Dict to store scheduled objects by name
 cubesat.scheduled_tasks={}
 
-print('Loading Tasks...',end='')
-# schedule all tasks in directory
+# Schedule all tasks in Tasks directory
+print('Loading Tasks...', end='')
 for file in os.listdir('Tasks'):
-    # remove the '.py' from file name
-    file=file[:-3]
+    # Remove py extension from file name
+    file = file[:-3]
 
     # ignore these files
     if file in ("template_task","test_task","listen_task") or file.startswith('._'):
         continue
 
-    # auto-magically import the task file
+    # Import the task's file
     exec('import Tasks.{}'.format(file))
-    # create a helper object for scheduling the task
-    task_obj=eval('Tasks.'+file).task(cubesat)
+    # Create helper object for scheduling the task
+    task_obj = eval('Tasks.'+file).task(cubesat)
 
-    # determine if the task wishes to be scheduled later
+    # Determine value of task's schedule_later variable 
+    # If true, skip first cycle of task
     if hasattr(task_obj, 'schedule_later') and getattr(task_obj, 'schedule_later'):
-        schedule=cubesat.tasko.schedule_later
+        schedule = cubesat.tasko.schedule_later
     else:
-        schedule=cubesat.tasko.schedule
+        schedule = cubesat.tasko.schedule
 
-    # schedule each task object and add it to our dict
-    cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency,task_obj.main_task,task_obj.priority)
-print(len(cubesat.scheduled_tasks),'total')
+    # Schedule each task object
+    cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 
-print('Running...')
+# Show all scheduled tasks
+showScheduledTasks()
+
+# Driver code, runs forever
+print('\nRunning...')
 try:
-    # should run forever
+    # Run forever
     cubesat.tasko.run()
 except Exception as e:
-    formated_exception = traceback.format_exception(e, e, e.__traceback__)
-    print(formated_exception)
+    formatted_exception = traceback.format_exception(e, e, e.__traceback__)
+    print(formatted_exception)
     try:
-        # increment our NVM error counter
+        # Increment NVM error counter
         cubesat.c_state_err+=1
-        # try to log everything
-        cubesat.log('{},{},{}'.format(formated_exception,cubesat.c_state_err,cubesat.c_boot))
+        # Try logging everything
+        cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
     except:
         pass
 
-# we shouldn't be here!
-print('Engaging fail safe: hard reset')
-from time import sleep
-sleep(10)
-cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
-cubesat.micro.reset()
+
+# If all fault-handling fails, hard reset PyCubed
+hardReset()

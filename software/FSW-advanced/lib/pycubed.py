@@ -1,10 +1,5 @@
 """
-CircuitPython driver for PyCubed satellite board.
-PyCubed Hardware Version: mainboard-v05
-CircuitPython Version: 7.0.0 alpha
-Library Repo: https://github.com/pycubed/library_pycubed.py
-
-* Author(s): Max Holliday, ISP Software Team
+CircuitPython driver for PyCubed satellite board
 """
 # Common CircuitPython Libs
 import board, microcontroller

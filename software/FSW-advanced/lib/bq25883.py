@@ -1,13 +1,5 @@
 """
-`bq25883`
-====================================================
-
 CircuitPython driver for the BQ25883 2-cell USB boost-mode charger.
-
-* Author(s): Max Holliday
-
-Implementation Notes
---------------------
 
 """
 
