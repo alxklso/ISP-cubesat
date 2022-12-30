@@ -7,13 +7,16 @@ PyCubed Beep-Sat Demo (advanced)
 
 
 M. Holliday
+Edited By: ISP Software Team
 """
 
 print('\n{lines}\n{:^40}\n{lines}\n'.format('Beep-Sat Demo',lines='-'*40))
 
 print('Initializing PyCubed Hardware...')
-import os, tasko, traceback
-from pycubed import cubesat
+import os
+import lib.tasko as tasko
+import traceback
+from lib.pycubed import cubesat
 
 # create asyncio object
 cubesat.tasko=tasko

@@ -4,7 +4,7 @@ PyCubed Hardware Version: mainboard-v05
 CircuitPython Version: 7.0.0 alpha
 Library Repo: https://github.com/pycubed/library_pycubed.py
 
-* Author(s): Max Holliday
+* Author(s): Max Holliday, ISP Software Team
 """
 # Common CircuitPython Libs
 import board, microcontroller
@@ -15,7 +15,6 @@ import digitalio, sdcardio, pwmio, tasko
 
 # Hardware Specific Libs
 import pycubed_rfm9x # Radio
-import bmx160 # IMU
 import neopixel # RGB LED
 import bq25883 # USB Charger
 import adm1176 # Power Monitor
@@ -65,11 +64,8 @@ class Satellite:
         self.debug=True
         self.micro=microcontroller
         self.hardware = {
-                       'IMU':    False,
                        'Radio1': False,
-                       'Radio2': False,
                        'SDcard': False,
-                       'GPS':    False,
                        'WDT':    False,
                        'USB':    False,
                        'PWR':    False}
@@ -87,14 +83,10 @@ class Satellite:
         self._chrg = digitalio.DigitalInOut(board.CHRG)
         self._chrg.switch_to_input()
 
-        # Define SPI,I2C,UART
+        # Define SPI, I2C, UART
         self.i2c1  = busio.I2C(board.SCL,board.SDA)
         self.spi   = board.SPI()
         self.uart  = busio.UART(board.TX,board.RX)
-
-        # Define GPS
-        self.en_gps = digitalio.DigitalInOut(board.EN_GPS)
-        self.en_gps.switch_to_output()
 
         # Define filesystem stuff
         self.logfile="/log.txt"
@@ -151,20 +143,6 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][Power Monitor]',e)
 
-        # Initialize IMU
-        try:
-            self.IMU = bmx160.BMX160_I2C(self.i2c1)
-            self.hardware['IMU'] = True
-        except Exception as e:
-            if self.debug: print('[ERROR][IMU]',e)
-
-        # # Initialize GPS
-        # try:
-        #     self.gps = GPS(self.uart,debug=False) # still powered off!
-        #     self.gps.timeout_handler=self.timeout_handler
-        #     self.hardware['GPS'] = True
-        # except Exception as e:
-        #     if self.debug: print('[ERROR][GPS]',e)
 
         # Initialize radio #1 - UHF
         try:
@@ -185,36 +163,13 @@ class Satellite:
 
     def reinit(self,dev):
         dev=dev.lower()
-        if   dev=='gps':
-            self.gps.__init__(self.uart,debug=False)
-        elif dev=='pwr':
+        if dev=='pwr':
             self.pwr.__init__(self.i2c1)
         elif dev=='usb':
             self.usb.__init__(self.i2c1)
-        elif dev=='imu':
-            self.IMU.__init__(self.i2c1)
         else:
             print('Invalid Device? ->',dev)
 
-    @property
-    def acceleration(self):
-        if self.hardware['IMU']:
-            return self.IMU.accel # m/s^2
-
-    @property
-    def magnetic(self):
-        if self.hardware['IMU']:
-            return self.IMU.mag # uT
-
-    @property
-    def gyro(self):
-        if self.hardware['IMU']:
-            return self.IMU.gyro # deg/s
-
-    @property
-    def temperature(self):
-        if self.hardware['IMU']:
-            return self.IMU.temperature # Celsius
 
     @property
     def RGB(self):
@@ -341,27 +296,15 @@ class Satellite:
             self.neopixel.brightness=0
             if self.hardware['Radio1']:
                 self.radio1.sleep()
-            if self.hardware['Radio2']:
-                self.radio2.sleep()
             self.enable_rf.value = False
-            if self.hardware['IMU']:
-                self.IMU.gyro_powermode  = 0x14 # suspend mode
-                self.IMU.accel_powermode = 0x10 # suspend mode
-                self.IMU.mag_powermode   = 0x18 # suspend mode
             if self.hardware['PWR']:
                 self.pwr.config('V_ONCE,I_ONCE')
-            if self.hardware['GPS']:
-                self.en_gps.value = False
             self.power_mode = 'minimum'
 
         elif 'norm' in mode:
             self.enable_rf.value = True
-            if self.hardware['IMU']:
-                self.reinit('IMU')
             if self.hardware['PWR']:
                 self.pwr.config('V_CONT,I_CONT')
-            if self.hardware['GPS']:
-                self.en_gps.value = True
             self.power_mode = 'normal'
             # don't forget to reconfigure radios, gps, etc...
 
