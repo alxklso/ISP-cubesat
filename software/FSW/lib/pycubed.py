@@ -6,6 +6,7 @@ Library Repo: https://github.com/pycubed/library_pycubed.py
 
 * Author(s): Max Holliday, ISP Software Team
 """
+
 # Common CircuitPython Libs
 import board
 import microcontroller
@@ -17,7 +18,7 @@ from analogio import AnalogIn
 import digitalio
 import sdcardio
 import pwmio
-import tasko
+import lib.tasko
 
 # Common CircuitPython Libs
 from os import listdir, stat, statvfs, mkdir, chdir
@@ -62,19 +63,20 @@ class Satellite:
         """
         Big init routine as the whole board is brought up.
         """
-        self.BOOTTIME = const(time.time())
-        self.data_cache = {}
-        self.filenumbers = {}
-        self.vlowbatt = 6.0
+        self.BOOTTIME = const(time.time()) # Start time stored as a const
+        self.data_cache = {}    # Data cache dict
+        self.filenumbers = {}   # File numbers dict
+        self.vlowbatt = 6.0 # Low batt voltage defined as 6V
         self.send_buff = memoryview(SEND_BUFF)
         self.debug = True
-        self.micro = microcontroller
+        self.micro = microcontroller # Object for accessing pins and bare metal
         self.hardware = {
             'Radio1': False,
             'SDcard': False,
             'WDT': False,
             'USB': False,
             'PWR': False}
+
         # Define burn wires:
         self._relayA = digitalio.DigitalInOut(board.RELAY_A)
         self._relayA.switch_to_output(drive_mode=digitalio.DriveMode.OPEN_DRAIN)
@@ -112,6 +114,7 @@ class Satellite:
         # Initialize SD card (always init SD before anything else on SPI bus)
         try:
             # Baud rate depends on the card, 4MHz should be safe
+            # DOUBLE CHECK BAUDRATE FOR SD CARD 
             _sd = sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
             _vfs = VfsFat(_sd)
             mount(_vfs, "/sd")
