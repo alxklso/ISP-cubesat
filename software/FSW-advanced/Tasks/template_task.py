@@ -27,7 +27,7 @@ class Task:
         """
         self.cubesat = satellite
 
-    def debug(self,msg,level=1):
+    def debug(self, msg, level=1):
         """
         Print a debug message formatted with the task name and color
 
@@ -35,10 +35,10 @@ class Task:
         :param level: > 1 will print as a sub-level
 
         """
-        if level==1:
-            print('{:>30} {}'.format('['+co(msg=self.name,color=self.color)+']',msg))
+        if level == 1:
+            print('{:>30} {}'.format('[' + co(msg = self.name, color = self.color) + ']', msg))
         else:
-            print('{}{}'.format('\t   └── ',msg))
+            print('{}{}'.format('\t   └── ', msg))
 
     async def main_task(self, *args, **kwargs):
         """

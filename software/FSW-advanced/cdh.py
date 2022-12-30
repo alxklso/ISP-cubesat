@@ -16,20 +16,20 @@ def noop(self):
 def hreset(self):
     self.debug('Resetting')
     try:
-        self.cubesat.radio1.send(data=b'resetting')
+        self.cubesat.radio1.send(data = b'resetting')
         self.cubesat.micro.on_next_reset(self.cubesat.micro.RunMode.NORMAL)
         self.cubesat.micro.reset()
     except:
         pass
 
-########### commands with arguments ###########
+########### Commands with arguments ###########
 
-def shutdown(self,args):
+def shutdown(self, args):
     # make shutdown require yet another pass-code
     if args == b'\x0b\xfdI\xec':
         self.debug('valid shutdown command received')
         # set shutdown NVM bit flag
-        self.cubesat.f_shtdwn=True
+        self.cubesat.f_shtdwn = True
         # stop all tasks
         for t in self.cubesat.scheduled_tasks:
             self.cubesat.scheduled_tasks[t].stop()
@@ -46,7 +46,7 @@ def shutdown(self,args):
 
 def query(self,args):
     self.debug('query: {}'.format(args))
-    self.cubesat.radio1.send(data=str(eval(args)))
+    self.cubesat.radio1.send(data = str(eval(args)))
 
 def exec_cmd(self,args):
     self.debug('exec: {}'.format(args))

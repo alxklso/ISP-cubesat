@@ -1,19 +1,19 @@
-from Tasks.template_task import Task
 import time
+from Tasks.template_task import Task
 
 """
 Every 10 minutes, this task turns on the Cosmic Watch for 1 minute, takes
-measurements, and records data in the SD card. The data will be stored in a
-plain txt file. PyCubed interfaces with CW via payload bus pins.
+measurements, and records data in a txt file on the SD card. The data will
+be stored in a plain txt file. PyCubed interfaces with CW via payload bus pins.
 
-The text file name takes the format of <start_time>_<end_time>.txt
+The txt file name takes the format of <start_time>.txt
 """
 
 
 class task(Task):
-    priority = 1  # low priority, preempted by everything except LED
+    priority = 10 # Set to low priority for now
     # TEST FREQ - 2 MINUTES, CHANGE TO 10 MINUTES AFTER VERIFICATION
-    frequency = 1/120  # once every 10 minutes, we listen to the UART pins
+    frequency = 1/120  
     name = 'cosmic watch'
     color = 'gray'
 
@@ -22,16 +22,13 @@ class task(Task):
 
     async def main_task(self):
 
-        # Create custom file name that contains start and end timestamps
-        # using UNIX time
-        filename = "temp"
+        # Create start time using UNIX epoch time 
+        # Used for file naming and to check when the task is finished
+        startTime = str(time.time())
 
-        with open("/sd/{}.txt".format(filename), "w") as fp:
-            # Get time that the task starts at
-            start = time.time()
-
+        with open("/sd/{}.txt".format(startTime), "w") as fp:
             # Continuously record data until 60 seconds later 
-            while (time.time()-start) < 60:
+            while (time.time()-startTime) < 60:
                 # Listen to uart2 pins 
                 data = self.cubesat.uart2.read()
 
@@ -47,6 +44,6 @@ class task(Task):
             print("File closed, now need to exit the task")
 
         # Debugging section
-        self.debug('test start: {}'.format(time.monotonic()))
+        self.debug("test start: {}".format(time.monotonic()))
         await self.cubesat.tasko.sleep(10)
-        self.debug('test stop: {}'.format(time.monotonic()))
+        self.debug("test stop: {}".format(time.monotonic()))

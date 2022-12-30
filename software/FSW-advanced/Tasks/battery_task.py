@@ -1,18 +1,23 @@
-# check for low battery condition
-
-from Tasks.template_task import Task
 import time
+from Tasks.template_task import Task
+
+
+"""
+This task checks the battery voltage against a voltage threshold 
+to check for low batteries. 
+"""
 
 class task(Task):
     priority = 3
     frequency = 1/10 # once every 10s
-    name='vbatt'
+    name ='vbatt'
     color = 'orange'
 
-    timeout=60*60 # 60 min
+    timeout = 60*60 # 60 min
 
     async def main_task(self):
-        vbatt=self.cubesat.battery_voltage
+
+        vbatt = self.cubesat.battery_voltage
         comp_var = ''
 
         if vbatt > self.cubesat.vlowbatt:
@@ -23,10 +28,10 @@ class task(Task):
         self.debug('{:.1f}V {} threshold: {:.1f}V'.format(vbatt,comp_var,self.cubesat.vlowbatt))
 
         ########### ADVANCED ###########
-        # respond to a low power condition
+        # Respond to a low power condition
         if comp_var == '<':
-            self.cubesat.f_lowbatt=True
-            # if we've timed out, don't do anything
+            self.cubesat.f_lowbatt = True # If low battery, set NVM bit flag
+            # If we've timed out, don't do anything
             if self.cubesat.f_lowbtout:
                 self.debug('lowbatt timeout flag set! skipping...')
             else:
