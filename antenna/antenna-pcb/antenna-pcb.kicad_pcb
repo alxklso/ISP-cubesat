@@ -549,7 +549,6 @@
   (via (at 104.2 114.95) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 2224b1b4-33ee-4e20-8fc6-d626bfa2e056))
   (via (at 108.05 91.9) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 22d27bcf-aa20-4e12-8690-6d7f9d2cdca8))
   (via (at 108.3 98.3) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 241846db-7ccc-4a30-b512-7ee55122975c))
-  (via (at 123.65 91.9) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 24492e09-7f0a-41d5-aea5-e7a69bc1583b))
   (via (at 103.85 86.45) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 265cbc14-99da-49e3-aa02-a2ee20711dca))
   (via (at 120.3 93.55) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 2b43bff1-3f4e-4eaf-a4eb-1d8836a7ee4e))
   (via (at 113.45 102.3) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp 2b8df3a8-5b1f-438f-9cc5-4773d73015a9))
@@ -734,10 +733,6 @@
   (via (at 135.05 91.85) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp fe6bf543-e2d5-4598-b738-0fa43417a761))
   (via (at 121.25 91.95) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 3) (tstamp ff6827ad-f750-4161-aa4c-a0fce6d9bcc0))
   (segment (start 130.5 86.7) (end 130.5 98.5) (width 0.35) (layer "B.Cu") (net 4) (tstamp 0f05d9d8-3705-42ca-9559-af4f4d1ce123))
-  (segment (start 126.3 89.42) (end 123.58 86.7) (width 0.25) (layer "B.Cu") (net 4) (tstamp ad1ef7e3-629c-4571-b4b9-a40691bb89ba))
-  (segment (start 126.3 86.7) (end 118.5 86.7) (width 0.25) (layer "B.Cu") (net 4) (tstamp dd423e60-62e0-4d2f-84e3-c12c1285d22f))
-  (segment (start 126.35 110.5) (end 126.3 110.55) (width 0.25) (layer "B.Cu") (net 5) (tstamp 166f436a-a08e-4a51-b618-e0b3d6656bf3))
-  (segment (start 126.3 107.58) (end 123.58 110.3) (width 0.25) (layer "B.Cu") (net 5) (tstamp 73f77a06-c8ae-4e38-bdf6-3c463ed36341))
   (segment (start 130.5 100.3) (end 130.5 110.3) (width 0.35) (layer "B.Cu") (net 5) (tstamp af609bf8-2bb4-4a3b-a1ef-a4d1ed258af7))
 
   (zone (net 3) (net_name "GND") (layers F&B.Cu) (tstamp 86f7a79d-ee7a-48c3-b2fa-52515cc295bd) (hatch edge 0.508)
