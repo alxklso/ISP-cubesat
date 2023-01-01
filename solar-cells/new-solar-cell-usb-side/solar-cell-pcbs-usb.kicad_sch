@@ -632,22 +632,6 @@
     (pin "2" (uuid b973ded1-8f90-4bab-a5c9-4666919b7659))
   )
 
-  (symbol (lib_id "power:GND") (at 48.26 138.43 0) (unit 1)
-    (in_bom yes) (on_board yes) (fields_autoplaced)
-    (uuid 5250df54-d711-4099-820d-6c1442819c3b)
-    (property "Reference" "#PWR0108" (id 0) (at 48.26 144.78 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "GND" (id 1) (at 48.26 143.51 0))
-    (property "Footprint" "" (id 2) (at 48.26 138.43 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 48.26 138.43 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 007c25a3-78a8-4b7f-b17e-7703fca81874))
-  )
-
   (symbol (lib_id "power:GND") (at 48.26 121.92 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 5fd6fd0b-b38c-4829-9eb3-2f584ac11f61)
@@ -806,7 +790,7 @@
   (symbol (lib_id "Mechanical:MountingHole_Pad") (at 77.47 135.89 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid a6717815-50da-423c-b99b-952ad2b012fb)
-    (property "Reference" "H8" (id 0) (at 80.01 133.3499 0)
+    (property "Reference" "H7" (id 0) (at 80.01 133.3499 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "MountingHole_Pad" (id 1) (at 80.01 135.8899 0)
@@ -996,24 +980,6 @@
     (pin "2" (uuid e3d84fcd-e90c-4264-ab10-4f77fee80a90))
   )
 
-  (symbol (lib_id "Mechanical:MountingHole_Pad") (at 48.26 135.89 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid ec72f6f6-dd1c-453c-aaba-004589220851)
-    (property "Reference" "H7" (id 0) (at 50.8 133.3499 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "MountingHole_Pad" (id 1) (at 50.8 135.8899 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "MountingHole:MountingHole_3.2mm_M3_DIN965_Pad" (id 2) (at 48.26 135.89 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (id 3) (at 48.26 135.89 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 72e7df6d-a04c-430b-89b8-dcd648a8f2d0))
-  )
-
   (symbol (lib_id "Device:Solar_Cell") (at 185.42 58.42 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid fb58294a-4256-4f4e-ac41-55cc9e85c40e)
@@ -1062,9 +1028,6 @@
     (path "/c93eb0d5-2495-4909-900f-5e702306228a"
       (reference "#PWR0107") (unit 1) (value "GND") (footprint "")
     )
-    (path "/5250df54-d711-4099-820d-6c1442819c3b"
-      (reference "#PWR0108") (unit 1) (value "GND") (footprint "")
-    )
     (path "/5fd6fd0b-b38c-4829-9eb3-2f584ac11f61"
       (reference "#PWR0109") (unit 1) (value "GND") (footprint "")
     )
@@ -1110,11 +1073,8 @@
     (path "/2236295f-7663-4df7-b57e-1ede5a16c0d7"
       (reference "H6") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_3.2mm_M3_DIN965_Pad")
     )
-    (path "/ec72f6f6-dd1c-453c-aaba-004589220851"
-      (reference "H7") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_3.2mm_M3_DIN965_Pad")
-    )
     (path "/a6717815-50da-423c-b99b-952ad2b012fb"
-      (reference "H8") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_3.2mm_M3_DIN965_Pad")
+      (reference "H7") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_3.2mm_M3_DIN965_Pad")
     )
     (path "/4d99938a-fe34-4ad4-80dd-a370c85df5e7"
       (reference "J1") (unit 1) (value "Solar Cell") (footprint "Molex_PicoLock_2p_2mm_2053380002:2053380002")
