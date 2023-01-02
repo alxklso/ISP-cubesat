@@ -382,7 +382,7 @@
       "idf": "",
       "netlist": "../../../../../../Applications/KiCad/KiCad.app/Contents/Applications/",
       "specctra_dsn": "",
-      "step": "",
+      "step": "new-solar-cell-burn-wire.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
