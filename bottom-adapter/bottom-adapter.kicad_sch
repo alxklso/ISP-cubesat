@@ -5,9 +5,9 @@
   (paper "A4")
 
   (title_block
-    (title "bottom-adapter")
-    (date "2023-01-01")
-    (rev "1")
+    (title "bottom-adapter-solar")
+    (date "2023-01-03")
+    (rev "2")
   )
 
   (lib_symbols
@@ -826,7 +826,7 @@
   (symbol (lib_id "power:GND") (at 167.64 110.49 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid ab97db33-d37d-4067-aabd-e60384abe3e7)
-    (property "Reference" "#PWR?" (id 0) (at 167.64 116.84 0)
+    (property "Reference" "#PWR0103" (id 0) (at 167.64 116.84 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (id 1) (at 167.64 115.57 0))
@@ -1069,6 +1069,9 @@
     (path "/ac35bc98-adc9-4e7c-b95f-38ae6c88db8a"
       (reference "#PWR0102") (unit 1) (value "GND") (footprint "")
     )
+    (path "/ab97db33-d37d-4067-aabd-e60384abe3e7"
+      (reference "#PWR0103") (unit 1) (value "GND") (footprint "")
+    )
     (path "/f870594d-5222-4d93-aa0e-6f8613145649"
       (reference "#PWR0104") (unit 1) (value "GND") (footprint "")
     )
@@ -1080,9 +1083,6 @@
     )
     (path "/9925ded1-7a3d-4cee-ad04-339e9ac7b416"
       (reference "#PWR0107") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/ab97db33-d37d-4067-aabd-e60384abe3e7"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
     (path "/16547f43-2994-4bdd-acb7-ff7fb67af51b"
       (reference "Burn1") (unit 1) (value "Burn") (footprint "TestPoint:TestPoint_THTPad_2.0x2.0mm_Drill1.0mm")
