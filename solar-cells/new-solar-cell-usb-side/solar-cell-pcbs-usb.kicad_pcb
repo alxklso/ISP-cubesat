@@ -6,9 +6,9 @@
 
   (paper "A4")
   (title_block
-    (title "Solar Cell PCB (non-USB side)")
-    (date "2022-12-25")
-    (rev "2")
+    (title "Solar Cell PCB (USB side)")
+    (date "2023-01-03")
+    (rev "3")
   )
 
   (layers
