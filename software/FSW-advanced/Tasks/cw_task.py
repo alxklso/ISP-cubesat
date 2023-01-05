@@ -32,11 +32,10 @@ class task(Task):
 
         with open("/sd/{}.txt".format(startTime), "w") as fp:
 
-            # Replace 0x18 with the i2c address of the CW and 0x05 with the register for reading
-            self.cubesat.i2c1.writeto(0x18, bytes([0x05]), stop=False)
-
             # Continuously record data until 60 seconds later
             while (time.time()-startTime) < 60:
+                # Replace 0x18 with the i2c address of the CW and 0x05 with the register for reading
+                self.cubesat.i2c1.writeto(0x18, bytes([0x05]), stop=False)
                 # Stores the result of reading
                 # Change byte array size as needed
                 data = bytearray(2)
