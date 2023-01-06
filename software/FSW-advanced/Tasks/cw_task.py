@@ -1,5 +1,5 @@
-import time
 from Tasks.template_task import Task
+import time
 
 """
 Every 10 minutes, this task turns on the Cosmic Watch for 1 minute, takes
@@ -26,12 +26,31 @@ class task(Task):
         # Used for file naming and to check when the task is finished
         startTime = str(time.time())
 
+        # Keep checking until we can get the i2c lock
+        while not self.cubesat.i2c1.try_lock():
+            pass
+
         with open("/sd/{}.txt".format(startTime), "w") as fp:
+<<<<<<< HEAD
             # Continuously record data until 60 seconds later 
             while (time.time() - startTime) < 60:
 
                 # Listen to uart2 pins 
                 data = self.cubesat.uart2.read()
+=======
+
+            # Continuously record data until 60 seconds later
+            while (time.time()-startTime) < 60:
+                # Replace 0x18 with the i2c address of the CW and 0x05 with the register for reading
+                self.cubesat.i2c1.writeto(0x18, bytes([0x05]), stop=False)
+                # Stores the result of reading
+                # Change byte array size as needed
+                data = bytearray(2)
+
+                # Reads from CW
+                # Change 0x18 to address of CW
+                self.cubesat.i2c1.readfrom_into(0x18, data)
+>>>>>>> 62312068ed386dce9a1a4cf67fe31766c9685957
 
                 if data:
                     # If buffer length is nonzero (there is data), decode
