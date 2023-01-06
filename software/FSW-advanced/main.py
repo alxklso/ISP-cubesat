@@ -6,10 +6,9 @@ from lib.pycubed import cubesat
 
 
 """
-FSW Main written by the ISP Software Team. Creates a queue of tasks from Tasks 
-folder and runs them according to task class attributes (priority, frequency). 
-Includes fault-handling and hard reset for PyCubed if needed.
-
+FSW Main. Creates a queue of tasks from Tasks folder and runs them
+according to task class attributes (priority, frequency). Includes
+fault-handling and hard reset for PyCubed if needed.
 """
 
 
@@ -47,7 +46,7 @@ for file in os.listdir('Tasks'):
     # Remove py extension from file name
     file = file[:-3]
 
-    # ignore these files
+    # Ignore these files
     if file in ("template_task","test_task","listen_task") or file.startswith('._'):
         continue
 
@@ -72,19 +71,21 @@ showScheduledTasks()
 # Driver code, runs forever
 print('\nRunning...')
 try:
-    # Run forever
+    # Run tasks forever
     cubesat.tasko.run()
+
 except Exception as e:
+    # If error occurs while running main FSW, print error
     formatted_exception = traceback.format_exception(e, e, e.__traceback__)
     print(formatted_exception)
     try:
         # Increment NVM error counter
         cubesat.c_state_err+=1
-        # Try logging everything
+        # Try logging the error in log.txt on the SD card
         cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
     except:
         pass
 
 
-# If all fault-handling fails, hard reset PyCubed
+# If all other fault-handling fails, hard reset PyCubed
 hardReset()

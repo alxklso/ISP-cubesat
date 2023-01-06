@@ -12,8 +12,6 @@
   3. TimerOne             -- by Jesse Tane et al. Version 1.1.0
 */
 
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
 #include <TimerOne.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -37,7 +35,6 @@ const int cal_max = 1023;
 
 //OLED SETUP
 #define OLED_RESET 10
-Adafruit_SSD1306 display(OLED_RESET);
 
 //initialize variables
 char detector_name[40];

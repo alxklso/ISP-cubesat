@@ -50,7 +50,7 @@
       (disableapertmacros false)
       (usegerberextensions true)
       (usegerberattributes false)
-      (usegerberadvancedattributes true)
+      (usegerberadvancedattributes false)
       (creategerberjobfile false)
       (svguseinch false)
       (svgprecision 6)
@@ -76,7 +76,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "antenna-pcbs-gerbers")
+      (outputdirectory "bottom-adapter-solar-gerbers")
     )
   )
 
