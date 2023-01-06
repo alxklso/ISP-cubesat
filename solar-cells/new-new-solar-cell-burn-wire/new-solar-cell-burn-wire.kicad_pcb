@@ -76,7 +76,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "gerbers/vertical-burn-gerbers")
+      (outputdirectory "solar-burn-gerbers")
     )
   )
 

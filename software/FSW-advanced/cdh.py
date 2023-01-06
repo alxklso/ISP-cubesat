@@ -8,7 +8,7 @@ commands = {
     b'\x96\xa2': 'exec_cmd',
 }
 
-########### commands without arguments ###########
+########### Commands without arguments ###########
 def noop(self):
     self.debug('no-op')
     pass

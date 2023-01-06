@@ -3,8 +3,8 @@ from Tasks.template_task import Task
 
 """
 Every 10 minutes, this task turns on the Cosmic Watch for 1 minute, takes
-measurements, and records data in a txt file on the SD card. The data will
-be stored in a plain txt file. PyCubed interfaces with CW via payload bus pins.
+measurements, and records data in a new plain txt file on the SD card.
+PyCubed interfaces with CW via payload bus pins.
 
 The txt file name takes the format of <start_time>.txt
 """
@@ -22,13 +22,14 @@ class task(Task):
 
     async def main_task(self):
 
-        # Create start time using UNIX epoch time 
+        # Store start time using UNIX epoch time 
         # Used for file naming and to check when the task is finished
         startTime = str(time.time())
 
         with open("/sd/{}.txt".format(startTime), "w") as fp:
             # Continuously record data until 60 seconds later 
-            while (time.time()-startTime) < 60:
+            while (time.time() - startTime) < 60:
+
                 # Listen to uart2 pins 
                 data = self.cubesat.uart2.read()
 
@@ -38,6 +39,9 @@ class task(Task):
                     dataDecoded = data.decode("utf-8")
                     fp.write(dataDecoded)
                     print(dataDecoded)
+
+                # Stall half a second before checking for data from I2C pins
+                time.sleep(0.5)
             
             # When time is up, close the file.
             fp.close()

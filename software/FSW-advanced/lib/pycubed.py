@@ -7,7 +7,8 @@ import board, microcontroller
 import busio, time, sys
 from storage import mount,umount,VfsFat
 from analogio import AnalogIn
-import digitalio, sdcardio, pwmio, tasko
+import lib.tasko as tasko 
+import digitalio, sdcardio, pwmio
 
 # Hardware Specific Libs
 import pycubed_rfm9x # Radio
