@@ -31,13 +31,11 @@ class task(Task):
             pass
 
         with open("/sd/{}.txt".format(startTime), "w") as fp:
-<<<<<<< HEAD
             # Continuously record data until 60 seconds later 
             while (time.time() - startTime) < 60:
 
                 # Listen to uart2 pins 
                 data = self.cubesat.uart2.read()
-=======
 
             # Continuously record data until 60 seconds later
             while (time.time()-startTime) < 60:
@@ -50,7 +48,6 @@ class task(Task):
                 # Reads from CW
                 # Change 0x18 to address of CW
                 self.cubesat.i2c1.readfrom_into(0x18, data)
->>>>>>> 62312068ed386dce9a1a4cf67fe31766c9685957
 
                 if data:
                     # If buffer length is nonzero (there is data), decode
