@@ -36,12 +36,16 @@ class task(Task):
             # Create start time using UNIX epoch time 
             # Used for file naming and to check when the task is finished
             with open(self.data_file,'ab') as f:
-                startTime = str(time.time())
-                while (time.time()-startTime) < 60:
-                    data = self.cubesat.uart2.read()
-                    dataDecoded = data.decode("utf-8")
-                    # fill in code here based on format of decoded string
-                    msgpack.pack(dataDecoded,f)
+                startTime = time.time()
+                while (time.time() - startTime) < 60:
+                    rawData = self.cubesat.uart2.read()
+                    dataDecoded = rawData.decode("utf-8")
+                    readings = {
+                        'time': time.time(),
+                        'voltage': dataDecoded
+                    }
+                    msgpack.pack(readings, f)
+                    time.sleep(0.5)
 
             # check if the file is getting bigger than we'd like
             if stat(self.data_file)[6] >= 256: # bytes
