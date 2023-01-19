@@ -31,7 +31,7 @@ _GSRSP    = const(10)
 _ICHRG    = const(11)
 _FLAG     = const(16)
 
-SEND_BUFF=bytearray(252)
+SEND_BUFF = bytearray(252)
 
 class Satellite:
     # General NVM counters
@@ -42,35 +42,36 @@ class Satellite:
     c_ichrg     = multiBitFlag(register=_ICHRG,   lowest_bit=0,num_bits=8)
 
     # Define NVM flags
-    f_lowbatt  = bitFlag(register=_FLAG,bit=0)
-    f_solar    = bitFlag(register=_FLAG,bit=1)
-    f_gpson    = bitFlag(register=_FLAG,bit=2)
-    f_lowbtout = bitFlag(register=_FLAG,bit=3)
-    f_gpsfix   = bitFlag(register=_FLAG,bit=4)
-    f_shtdwn   = bitFlag(register=_FLAG,bit=5)
+    f_lowbatt       = bitFlag(register=_FLAG,bit=0)
+    f_solar         = bitFlag(register=_FLAG,bit=1)
+    f_burnedAlready = bitFlag(register=_FLAG,bit=2) # For burn wire usage
+    f_lowbtout      = bitFlag(register=_FLAG,bit=3)
+    f_gpsfix        = bitFlag(register=_FLAG,bit=4)
+    f_shtdwn        = bitFlag(register=_FLAG,bit=5)
 
     def __init__(self):
         """
         Big init routine as the whole board is brought up.
         """
-        self.BOOTTIME= const(time.time())
-        self.data_cache={}
-        self.filenumbers={}
-        self.vlowbatt=6.0
+        self.BOOTTIME = const(time.time())
+        self.data_cache = {}
+        self.filenumbers = {}
+        self.vlowbatt = 6.0
         self.send_buff = memoryview(SEND_BUFF)
-        self.debug=True
-        self.micro=microcontroller
+        self.debug = True
+        self.micro = microcontroller
         self.hardware = {
                        'Radio1': False,
                        'SDcard': False,
                        'WDT':    False,
                        'USB':    False,
                        'PWR':    False}
+
         # Define burn wires:
         self._relayA = digitalio.DigitalInOut(board.RELAY_A)
-        self._relayA.switch_to_output(drive_mode=digitalio.DriveMode.OPEN_DRAIN)
+        self._relayA.switch_to_output(drive_mode = digitalio.DriveMode.OPEN_DRAIN)
         self._resetReg = digitalio.DigitalInOut(board.VBUS_RST)
-        self._resetReg.switch_to_output(drive_mode=digitalio.DriveMode.OPEN_DRAIN)
+        self._resetReg.switch_to_output(drive_mode = digitalio.DriveMode.OPEN_DRAIN)
 
         # Define battery voltage
         self._vbatt = AnalogIn(board.BATTERY)
@@ -81,22 +82,22 @@ class Satellite:
         self._chrg.switch_to_input()
 
         # Define SPI, I2C, UART
-        self.i2c1  = busio.I2C(board.SCL,board.SDA)
-        self.spi   = board.SPI()
-        self.uart  = busio.UART(board.TX,board.RX)
+        self.i2c1 = busio.I2C(board.SCL,board.SDA)
+        self.spi = board.SPI()
+        self.uart = busio.UART(board.TX,board.RX)
 
         # Define filesystem stuff
-        self.logfile="/log.txt"
+        self.logfile = "/log.txt"
 
         # Define radio
         _rf_cs1 = digitalio.DigitalInOut(board.RF1_CS)
         _rf_rst1 = digitalio.DigitalInOut(board.RF1_RST)
         self.enable_rf = digitalio.DigitalInOut(board.EN_RF)
-        self.radio1_DIO0=digitalio.DigitalInOut(board.RF1_IO0)
+        self.radio1_DIO0 = digitalio.DigitalInOut(board.RF1_IO0)
         # self.enable_rf.switch_to_output(value=False) # if U21
-        self.enable_rf.switch_to_output(value=True) # if U7
-        _rf_cs1.switch_to_output(value=True)
-        _rf_rst1.switch_to_output(value=True)
+        self.enable_rf.switch_to_output(value = True) # if U7
+        _rf_cs1.switch_to_output(value = True)
+        _rf_rst1.switch_to_output(value = True)
         self.radio1_DIO0.switch_to_input()
 
         # Initialize SD card (always init SD before anything else on spi bus)
@@ -108,9 +109,9 @@ class Satellite:
             self.fs=_vfs
             sys.path.append("/sd")
             self.hardware['SDcard'] = True
-            self.logfile="/sd/log.txt"
+            self.logfile = "/sd/log.txt"
         except Exception as e:
-            if self.debug: print('[ERROR][SD Card]',e)
+            if self.debug: print("[ERROR][SD Card]",e)
 
         # Initialize Neopixel
         try:
@@ -167,6 +168,13 @@ class Satellite:
         else:
             print('Invalid Device? ->',dev)
 
+    # For burn wire status
+    @property 
+    def burnedAlready(self):
+        return self.f_burnedAlready
+    @burnedAlready.setter
+    def burnedAlready(self, value):
+        self.f_burnedAlready = value
 
     @property
     def RGB(self):

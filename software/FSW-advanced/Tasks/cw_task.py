@@ -59,16 +59,17 @@ class task(Task):
                             print(chunk)
                             chunk = f.read(64)
                     print('finished\n')
+
                 else:
                     # print the unpacked data from the file
                     print('\nPrinting CW data file: {}'.format(self.data_file))
                     with open(self.data_file,'rb') as f:
                         while True:
-                            try: print('\t',msgpack.unpack(f))
+                            try: print('\t', msgpack.unpack(f))
                             except: break
                     print('finished\n')
             
-            self.data_file=self.cubesat.new_file('/sd/cw')
+            self.data_file = self.cubesat.new_file('/sd/cw')
 
         # Debugging section
         self.debug("test start: {}".format(time.monotonic()))

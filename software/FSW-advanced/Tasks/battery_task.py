@@ -20,6 +20,7 @@ class task(Task):
         vbatt = self.cubesat.battery_voltage
         comp_var = ''
 
+        # vlowbatt = 6.0V in pycubed.py
         if vbatt > self.cubesat.vlowbatt:
             comp_var = '>'
         else:
