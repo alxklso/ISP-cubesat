@@ -6,7 +6,7 @@ This repo contains:
 - [batt-board]: PyCubed V1b Battery Board
 - [software]: PyCubed Flight Software  
 - [cosmic-watch]: Cosmic Watch (payload)
-- [solar-cells]: Solar Cell PCBs
+- [solar-panels]: Solar Panel PCBs
 - [antenna]: Antenna PCBs
 - [bottom-adapter]: Bottom adapter plate w/ solar cells
 - [ISP.pretty]: Custom KiCad footprint library

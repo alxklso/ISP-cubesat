@@ -54,6 +54,7 @@ def startupRoutine():
         # dutycycle = 0.05
         # freq = 1000
         # duration  = 1
+        # CPP did: c.burn("2",0.5,4000,1.3)
         
         cubesat.burn("1", 0.05, 1000, 1)
         cubesat.burnedAlready = True # Set bit flag
@@ -69,7 +70,11 @@ def startupRoutine():
     initialMessage = "KE8VDK [Hello world, CoyoteSat here!] KE8VDK"
     startTime = time.time()
     while time.time() - startTime < 7200:
-        cubesat.radio1.send(initialMessage, destination = 0xFF, keep_listening = True)
+        try:
+            cubesat.radio1.send(initialMessage, destination = 0xFF, keep_listening = True)
+        except Exception as e:
+            print(e)
+            pass
         time.sleep(60) # Sleep 60 sec.
     
     # 5 sec. buffer before exiting and starting main portion
@@ -88,7 +93,7 @@ if not cubesat.burnedAlready:
     startupRoutine()
 
 # Else begin the main part of the program
-print("Initial routine successful!")
+print("Initial routine successful! Starting main portion...")
 
 # Create asyncio object
 cubesat.tasko = tasko

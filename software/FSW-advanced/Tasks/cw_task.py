@@ -38,7 +38,7 @@ class task(Task):
             with open(self.data_file,'ab') as f:
                 startTime = time.time()
                 while (time.time() - startTime) < 60:
-                    rawData = self.cubesat.uart2.read()
+                    rawData = self.cubesat.i2c2.read()
                     dataDecoded = rawData.decode("utf-8")
                     readings = {
                         'time': time.time(),
