@@ -333,7 +333,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "antenna-pcb.kicad_pro",
+    "filename": "bottom-adapter.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -365,7 +365,7 @@
     "last_paths": {
       "gencad": "",
       "idf": "",
-      "netlist": "",
+      "netlist": "../../../../Applications/KiCad/",
       "specctra_dsn": "",
       "step": "",
       "vrml": ""
