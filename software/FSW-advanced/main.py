@@ -92,7 +92,7 @@ time.sleep(180) # 3 min. delay after pod deployment
 if not cubesat.burnedAlready:
     startupRoutine()
 
-# Else begin the main part of the program
+# After running startupRoutine or not, begin main part of program
 print("Initial routine successful! Starting main portion...")
 
 # Create asyncio object
