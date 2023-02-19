@@ -55,7 +55,7 @@ def transmit_test(message):
     try: 
         i = 0
         while True:
-            cubesat.radio2.send(str(i) + " " + message + "                                                                                                   ")
+            cubesat.radio2.send(str(i) + " " + message)
             print(str(i) + " - " + message)
             i+= 1
             time.sleep(1)
