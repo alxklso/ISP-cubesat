@@ -62,6 +62,7 @@ class Satellite:
         self.micro = microcontroller
         self.hardware = {
                        'Radio1': False,
+                       'Radio2': False,
                        'SDcard': False,
                        'WDT':    False,
                        'USB':    False,
@@ -90,7 +91,7 @@ class Satellite:
         # Define filesystem stuff
         self.logfile = "/log.txt"
 
-        # Define radio
+        # Define radio1
         _rf_cs1 = digitalio.DigitalInOut(board.RF1_CS)
         _rf_rst1 = digitalio.DigitalInOut(board.RF1_RST)
         self.enable_rf = digitalio.DigitalInOut(board.EN_RF)
@@ -100,6 +101,16 @@ class Satellite:
         _rf_cs1.switch_to_output(value = True)
         _rf_rst1.switch_to_output(value = True)
         self.radio1_DIO0.switch_to_input()
+
+        # Define radio2
+        _rf_cs2 = digitalio.DigitalInOut(board.RF2_CS)
+        _rf_rst2 = digitalio.DigitalInOut(board.RF2_RST)
+        #cubesat.enable_rf = digitalio.DigitalInOut(board.EN_RF)
+        self.radio2_DIO0=digitalio.DigitalInOut(board.RF2_IO0)
+        #cubesat.enable_rf.switch_to_output(value=False) # if U21
+        _rf_cs2.switch_to_output(value=True)
+        _rf_rst2.switch_to_output(value=True)
+        self.radio2_DIO0.switch_to_input()
 
         # Initialize SD card (always init SD before anything else on spi bus)
         try:
@@ -156,6 +167,21 @@ class Satellite:
             self.hardware['Radio1'] = True
         except Exception as e:
             if self.debug: print('[ERROR][RADIO 1]',e)
+
+
+        # Initialize radio #2 - UHF
+        try:
+            cubesat.radio2 = pycubed_rfm9x.RFM9x(cubesat.spi, _rf_cs2, _rf_rst2,
+            433.0, code_rate=8, baudrate=1320000)
+            # Default LoRa Modulation Settings
+            # Frequency: 433 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
+            cubesat.radio2.dio0=cubesat.radio2_DIO0
+            cubesat.radio2.enable_crc=True
+            cubesat.radio2.ack_delay=0.2
+            cubesat.radio2.sleep()
+            cubesat.hardware["Radio2"] = True
+        except Exception as e:
+            if self.debug: print('[ERROR][RADIO 2]',e)
 
         # set PyCubed power mode
         self.power_mode = 'normal'
@@ -302,6 +328,8 @@ class Satellite:
             self.neopixel.brightness=0
             if self.hardware['Radio1']:
                 self.radio1.sleep()
+            if self.hardware['Radio2']:
+                self.radio2.sleep()
             self.enable_rf.value = False
             if self.hardware['PWR']:
                 self.pwr.config('V_ONCE,I_ONCE')
