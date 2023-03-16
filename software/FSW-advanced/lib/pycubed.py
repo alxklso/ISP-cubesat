@@ -102,15 +102,16 @@ class Satellite:
         _rf_rst1.switch_to_output(value = True)
         self.radio1_DIO0.switch_to_input()
 
+        # PYCUBED FLIGHT MODELS USE RADIO1!
         # Define radio2
-        _rf_cs2 = digitalio.DigitalInOut(board.RF2_CS)
-        _rf_rst2 = digitalio.DigitalInOut(board.RF2_RST)
-        #cubesat.enable_rf = digitalio.DigitalInOut(board.EN_RF)
-        self.radio2_DIO0=digitalio.DigitalInOut(board.RF2_IO0)
-        #cubesat.enable_rf.switch_to_output(value=False) # if U21
-        _rf_cs2.switch_to_output(value=True)
-        _rf_rst2.switch_to_output(value=True)
-        self.radio2_DIO0.switch_to_input()
+        # _rf_cs2 = digitalio.DigitalInOut(board.RF2_CS)
+        # _rf_rst2 = digitalio.DigitalInOut(board.RF2_RST)
+        # #cubesat.enable_rf = digitalio.DigitalInOut(board.EN_RF)
+        # self.radio2_DIO0=digitalio.DigitalInOut(board.RF2_IO0)
+        # #cubesat.enable_rf.switch_to_output(value=False) # if U21
+        # _rf_cs2.switch_to_output(value=True)
+        # _rf_rst2.switch_to_output(value=True)
+        # self.radio2_DIO0.switch_to_input()
 
         # Initialize SD card (always init SD before anything else on spi bus)
         try:
@@ -168,20 +169,22 @@ class Satellite:
         except Exception as e:
             if self.debug: print('[ERROR][RADIO 1]',e)
 
-
+        
+        # PYCUBED FLIGHT MODEL BOARDS USE RADIO1!
+    
         # Initialize radio #2 - UHF
-        try:
-            cubesat.radio2 = pycubed_rfm9x.RFM9x(cubesat.spi, _rf_cs2, _rf_rst2,
-            433.0, code_rate=8, baudrate=1320000)
-            # Default LoRa Modulation Settings
-            # Frequency: 433 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
-            cubesat.radio2.dio0=cubesat.radio2_DIO0
-            cubesat.radio2.enable_crc=True
-            cubesat.radio2.ack_delay=0.2
-            cubesat.radio2.sleep()
-            cubesat.hardware["Radio2"] = True
-        except Exception as e:
-            if self.debug: print('[ERROR][RADIO 2]',e)
+        # try:
+        #     cubesat.radio2 = pycubed_rfm9x.RFM9x(cubesat.spi, _rf_cs2, _rf_rst2,
+        #     433.0, code_rate=8, baudrate=1320000)
+        #     # Default LoRa Modulation Settings
+        #     # Frequency: 433 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
+        #     cubesat.radio2.dio0=cubesat.radio2_DIO0
+        #     cubesat.radio2.enable_crc=True
+        #     cubesat.radio2.ack_delay=0.2
+        #     cubesat.radio2.sleep()
+        #     cubesat.hardware["Radio2"] = True
+        # except Exception as e:
+        #     if self.debug: print('[ERROR][RADIO 2]',e)
 
         # set PyCubed power mode
         self.power_mode = 'normal'

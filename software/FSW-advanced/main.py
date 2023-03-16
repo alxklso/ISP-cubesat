@@ -18,10 +18,10 @@ def showScheduledTasks():
     Remove in flight source.
     """
 
-    print("\nTasks scheduled to run (count: {})".format(len(cubesat.scheduled_tasks)))
+    print(f"\nTasks scheduled to run (count: {len(cubesat.scheduled_tasks)})")
     print("-"*50)
     for task_key, task_value in cubesat.scheduled_tasks.items():
-        print(task_key + " -- " + str(task_value))
+        print(f"{task_key} -- {str(task_value)}")
 
 
 def hardReset():
@@ -30,7 +30,7 @@ def hardReset():
     """
 
     # If all other fault-handling fails, hard reset the PyCubed
-    print('Engaging fail-safe: hard reset')
+    print("Engaging fail-safe: hard reset")
     time.sleep(10)
     cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
     cubesat.micro.reset()
@@ -46,8 +46,7 @@ def startupRoutine():
         - 5 sec. buffer after receiving ground confirmation
     """
 
-    # If we have not triggered burn wire before, attempt to do so
-    # and set bit flag 
+    # If we have not triggered burn wire before, attempt to do so and set bit flag 
     try:
         # Default starting values for burn() are:
         # burn_num = "1" or "2"
@@ -56,7 +55,7 @@ def startupRoutine():
         # duration  = 1
         # CPP did: c.burn("2",0.5,4000,1.3)
         
-        cubesat.burn("1", 0.05, 1000, 1)
+        #cubesat.burn("1", 0.05, 1000, 1)
         cubesat.burnedAlready = True # Set bit flag
         print("Burn wire successful!")
 
@@ -71,11 +70,12 @@ def startupRoutine():
     startTime = time.time()
     while time.time() - startTime < 7200:
         try:
-            cubesat.radio1.send(initialMessage, destination = 0xFF, keep_listening = True)
+            #cubesat.radio1.send(initialMessage, destination = 0xFF, keep_listening = True)
+            print("Sending message...") # For debugging w/o radio attached
         except Exception as e:
             print(e)
             pass
-        time.sleep(60) # Sleep 60 sec.
+        time.sleep(60) # Send message once every min.
     
     # 5 sec. buffer before exiting and starting main portion
     time.sleep(5)
@@ -150,6 +150,3 @@ except Exception as e:
 
 # If all other fault-handling fails, hard reset PyCubed
 hardReset()
-
-
-

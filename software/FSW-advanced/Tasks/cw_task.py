@@ -4,11 +4,13 @@ import msgpack
 from os import stat
 
 """
-Every 10 minutes, this task turns on the Cosmic Watch for 1 minute, takes
+Every 2 minutes, this task turns on the Cosmic Watch for 1 minute, takes
 measurements, and records data in a new plain txt file on the SD card.
 PyCubed interfaces with CW via payload bus pins.
 
 The txt file name takes the format of <start_time>.txt
+
+IN FLIGHT MODEL: Decrease frequency, TBD
 """
 
 SEND_DATA = False
