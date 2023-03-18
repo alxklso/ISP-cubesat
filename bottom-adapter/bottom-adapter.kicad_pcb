@@ -2365,7 +2365,7 @@
   (gr_text "Special Thanks To:" (at 118.25 112) (layer "B.SilkS") (tstamp af8f4550-e170-4828-b423-f1ba60344533)
     (effects (font (size 1.15 1.15) (thickness 0.23) bold) (justify bottom mirror))
   )
-  (gr_text "\n\n\nRexforr|Bisser Paskalev|Srinidhi Ananth|Steffen Jauch\njcubic|Ryan W|Simran Hajarnavis|Xiqin Yang|Weiying Huang\nJulian Galaz|Kaylynn Yamanashi|Cassandra Riley|Ashok Sudarshanam\nLuca Richman|Alberto Lugo|Anthony Ucciferri| Michelle Hernandez\nEthan Taub|Jing Zhang|Charles Xie|Henry Cowherd|Chris Glenn\nSean|Madhura & Ranga Nadig|Geeta & Ramji Paranandi|Adam Kang\nGreg Panzer|Susan Post|Shobha Rao|Danny Breeze|Shawn Tolidano\nFiona Selep|Michael Ness|Pepito|Lucille Coleman\n" (at 91.44 99.06 270) (layer "F.SilkS") (tstamp 102b5bdf-c19d-4c24-8a8f-b685b6a32a8d)
+  (gr_text "\n\n\nRexforr|Bisser Paskalev|Srinidhi Ananth|Steffen Jauch\njcubic|Ryan W|Simran Hajarnavis|Xiqin Yang|Weiying Huang\nJulian Galaz|Kaylynn Yamanashi|Cassandra Riley|Ashok Sudarshanam\nLuca Richman|Alberto Lugo|Anthony Ucciferri| Michelle Hernandez\nEthan Taub|Jing Zhang|Charles Xie|Henry Cowherd|Chris Glenn\nSean|Madhura & Ranga Nadig|Geeta & Ramji Paranandi|Adam Kang\nGreg Panzer|Susan Post|Shobha Rao|Danny Breeze|Shawn Tolidano\nFiona Selep|Michael Ness|Pepito\n" (at 91.44 99.06 270) (layer "F.SilkS") (tstamp 102b5bdf-c19d-4c24-8a8f-b685b6a32a8d)
     (effects (font (size 0.9 0.9) (thickness 0.10125)))
   )
   (gr_text "BURN" (at 112.1 95.7) (layer "F.SilkS") (tstamp 320431e8-e5df-4884-8833-3c0e958ffee4)
