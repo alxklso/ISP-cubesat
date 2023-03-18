@@ -2359,9 +2359,6 @@
   (gr_text "BURN" (at 112.1 95.7) (layer "B.SilkS") (tstamp 3a26da71-5b7d-4f1c-a70f-9b8e077d27b1)
     (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
   )
-  (gr_text "Quotes:" (at 118.25 133.59) (layer "B.SilkS") (tstamp 8760ebcc-b11b-4049-a07d-9fb77d3ea61b)
-    (effects (font (size 1.15 1.15) (thickness 0.23) bold) (justify bottom mirror))
-  )
   (gr_text "GND\n" (at 112 101.6) (layer "B.SilkS") (tstamp a4aae937-2033-465b-afd6-242e71629040)
     (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
   )
@@ -2390,8 +2387,8 @@
     (start 101.74 113.03) (end 134.76 120.65) (layer "B.SilkS") (tstamp c69f60d4-a5a9-4697-b6b9-1659f2666425)
       (effects (font (size 1 1) (thickness 0.15)) (justify top mirror))
   )
-  (gr_text_box "{dblquote}God is love{dblquote} - Michael Chiglinsky\n{dblquote}Praise be to god{dblquote} - Ethan Philpott"
-    (start 101.74 134.62) (end 134.76 139.7) (layer "B.SilkS") (tstamp dff3b18a-900e-4d11-8092-b4b4abd514b9)
+  (gr_text_box "{dblquote}God is love{dblquote} - Michael Chiglinsky | {dblquote}Praise be to god{dblquote} - Ethan Philpott"
+    (start 82.69 137.16) (end 153.81 139.7) (layer "B.SilkS") (tstamp dff3b18a-900e-4d11-8092-b4b4abd514b9)
       (effects (font (size 1 1) (thickness 0.15)) (justify top mirror))
   )
   (dimension (type aligned) (layer "Dwgs.User") (tstamp 4a9e9ce5-43cc-4130-9820-a1469bc5806a)
