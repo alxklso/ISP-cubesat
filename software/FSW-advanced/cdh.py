@@ -51,8 +51,3 @@ def query(self,args):
 def exec_cmd(self,args):
     self.debug('exec: {}'.format(args))
     exec(args)
-
-
-
-
-
