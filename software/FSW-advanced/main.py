@@ -45,7 +45,7 @@ def startupRoutine():
         - TODO: Send test beacons and listen for ground confirmation
         - 5 sec. buffer after receiving ground confirmation
     """
-
+    print("Inside startup routine")
     # If we have not triggered burn wire before, attempt to do so and set bit flag 
     try:
         # Default starting values for burn() are:
@@ -55,28 +55,17 @@ def startupRoutine():
         # duration  = 1
         # CPP did: c.burn("2",0.5,4000,1.3)
         
-        #cubesat.burn("1", 0.05, 1000, 1)
-        cubesat.burnedAlready = True # Set bit flag
-        print("Burn wire successful!")
+        #cubesat.burn("1", 0.1, 1200, 2)
+        print("Burning uwu")
+        print(f"Burn NVM bit flag should be False: {cubesat.f_burnedAlready}")
+        cubesat.f_burnedAlready = True  # Set bit flag
+        print(f"Burn NVM bit flag should be True: {cubesat.f_burnedAlready}")
 
     # If error during burn wire usage
     except Exception as e:
         print(e)
         pass
-
-    # Next, send message to ground station once per min for 2 hrs after deployment.
-    # Prepend and append radio call sign KE8VDK
-    initialMessage = "KE8VDK [Hello world, CoyoteSat here!] KE8VDK"
-    startTime = time.time()
-    while time.time() - startTime < 7200:
-        try:
-            #cubesat.radio1.send(initialMessage, destination = 0xFF, keep_listening = True)
-            print("Sending message...") # For debugging w/o radio attached
-        except Exception as e:
-            print(e)
-            pass
-        time.sleep(60) # Send message once every min.
-    
+     
     # 5 sec. buffer before exiting and starting main portion
     time.sleep(5)
 
@@ -86,10 +75,14 @@ def startupRoutine():
 
 ############# MAIN PORTION START ############# 
 
-time.sleep(180) # 3 min. delay after pod deployment
+print("Waiting")
+# time.sleep(180) # 3 min. delay after pod deployment
 
 # If burn wire bit flag not set, then perform initial routine
-if not cubesat.burnedAlready:
+cubesat.f_burnedAlready = False
+
+if not cubesat.f_burnedAlready:
+    print("Outside start routine")
     startupRoutine()
 
 # After running startupRoutine or not, begin main part of program
