@@ -83,10 +83,10 @@ class Satellite:
         self._chrg.switch_to_input()
 
         # Define SPI, I2C, UART
-        self.i2c1 = busio.I2C(board.SCL,board.SDA)
+        # self.i2c1 = busio.I2C(board.SCL,board.SDA)
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX,board.RX)
-        #self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
+        self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
 
         # Define filesystem stuff
         self.logfile = "/log.txt"
