@@ -47,6 +47,7 @@ time.sleep(180) # Delay after pod deployment
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     if cubesat.battery_voltage >= 7.8:
+        cubesat.f_lowbatt = False
         cubesat.powermode('norm')
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
@@ -61,6 +62,7 @@ if not cubesat.f_burnedAlready:
     # Charge until batteries are fully charged
     else:
         print("Entering low power mode...")
+        cubesat.f_lowbatt = True
         cubesat.powermode('min')
         sleep_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 180)
         # Sleeps the cubesat until the alarm sounds, then it runs main.py again
