@@ -47,6 +47,7 @@ time.sleep(180) # Delay after pod deployment
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     if cubesat.battery_voltage >= 7.8:
+        cubesat.powermode('norm')
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
             print("Burning uwu")
