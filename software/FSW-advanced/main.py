@@ -4,9 +4,8 @@ from lib.pycubed import cubesat
 
 
 """
-FSW MAIN: Creates a queue of tasks from Tasks folder and runs them
-according to task class attributes (priority, frequency). Includes
-fault-handling and hard reset for PyCubed if needed.
+FSW MAIN: Creates a queue of scheduled tasks that runs forever. Includes
+a first-time startup burn-wire section, as well as batt pack voltage check.
 """
 
 
@@ -36,110 +35,81 @@ def hardReset():
     cubesat.micro.reset()
 
 
-def startupRoutine():
-    """
-    Startup routine after pod deployment which is only supposed to 
-    happen once. The following tasks are executed (in order):
-        - Trigger burn wire
-        - Set burn wire bit flag
-        - TODO: Send test beacons and listen for ground confirmation
-        - 5 sec. buffer after receiving ground confirmation
-    """
-    print("Inside startup routine")
-    # If we have not triggered burn wire before, attempt to do so and set bit flag 
-    try:
-        # Default starting values for burn() are:
-        # burn_num = "1" or "2"
-        # dutycycle = 0.05
-        # freq = 1000
-        # duration  = 1
-        # CPP did: c.burn("2",0.5,4000,1.3)
-        
-        #cubesat.burn("1", 0.1, 1200, 2)
-        print("Burning uwu")
-        print(f"Burn NVM bit flag should be False: {cubesat.f_burnedAlready}")
-        cubesat.f_burnedAlready = True  # Set bit flag
-        print(f"Burn NVM bit flag should be True: {cubesat.f_burnedAlready}")
-
-    # If error during burn wire usage
-    except Exception as e:
-        print(e)
-        pass
-     
-    # 5 sec. buffer before exiting and starting main portion
-    time.sleep(5)
-
 ############# HELPER FUNCTIONS END ############# 
 
 
 
 ############# MAIN PORTION START ############# 
 
-print("Waiting")
-# time.sleep(180) # 3 min. delay after pod deployment
+time.sleep(180) # Delay after pod deployment
 
-# If burn wire bit flag not set, then perform initial routine
-cubesat.f_burnedAlready = False
 
-if not cubesat.f_burnedAlready:
-    print("Outside start routine")
-    startupRoutine()
+while(not cubesat.f_burnedAlready):
+    # Batt pack voltage needs to be >= 7.8V for first time startup
+    if cubesat.battery_voltage >= 7.8:
+        try:
+            print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
+            print("Burning uwu")
+            #cubesat.burn("1", 0.10, 1200, 1)
+            cubesat.f_burnedAlready = True  # Set bit flag
+            print(f"Post-burn NVM bit status: {cubesat.f_burnedAlready}")
+            time.sleep(3)
+        except Exception as e:
+            print(e)
 
-# After running startupRoutine or not, begin main part of program
-print("Initial routine successful! Starting main portion...")
-
-# Create asyncio object
-cubesat.tasko = tasko
-
-# Dict to store scheduled objects by name
-cubesat.scheduled_tasks={}
-
-# Schedule all tasks in Tasks directory
-print("Loading Tasks...", end = "")
-for file in os.listdir("Tasks"):
-    # Remove py extension from file name
-    file = file[:-3]
-
-    # Ignore these files
-    if file in ("template_task","test_task","listen_task") or file.startswith('._'):
-        continue
-
-    # Import the task's file
-    exec('import Tasks.{}'.format(file))
-    # Create helper object for scheduling the task
-    task_obj = eval('Tasks.'+file).task(cubesat)
-
-    # Determine value of task's schedule_later variable 
-    # If true, skip first cycle of task
-    if hasattr(task_obj, 'schedule_later') and getattr(task_obj, 'schedule_later'):
-        schedule = cubesat.tasko.schedule_later
     else:
-        schedule = cubesat.tasko.schedule
+        print("Entering low power mode...")
+        
 
-    # Schedule each task object
-    cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 
-# Show all scheduled tasks
-showScheduledTasks()
+print("Startup routine successful! Starting main portion...")
 
-# Driver code, runs forever
-print("\nRunning...")
-try:
-    # Run tasks forever
-    cubesat.tasko.run()
+if cubesat.f_burnedAlready:
+    # Schedule tasks
+    cubesat.tasko = tasko
+    cubesat.scheduled_tasks={}
 
-except Exception as e:
-    # If error occurs while running main FSW, print error
-    formatted_exception = traceback.format_exception(e, e, e.__traceback__)
-    print(formatted_exception)
+    print("Loading Tasks...", end = "")
+    for file in os.listdir("Tasks"):
+        file = file[:-3]
+
+        # Ignore these files
+        if file in ("template_task","test_task","listen_task", "cw_task") or file.startswith('._'):
+            continue
+
+        # Import task file
+        exec('import Tasks.{}'.format(file))
+        task_obj = eval('Tasks.'+file).task(cubesat)
+
+        # Tasks scheduled for later 
+        if hasattr(task_obj, 'schedule_later') and getattr(task_obj, 'schedule_later'):
+            schedule = cubesat.tasko.schedule_later
+        else:
+            schedule = cubesat.tasko.schedule
+
+        cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
+
+    # Show all scheduled tasks
+    showScheduledTasks()
+
+    # Driver code, runs forever
+    print("\nRunning...")
     try:
-        # Increment NVM error counter
-        cubesat.c_state_err+=1
-        # Try logging the error in log.txt on the SD card
-        cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
-    except:
-        pass
+        # Run tasks forever
+        cubesat.tasko.run()
 
+    except Exception as e:
+        formatted_exception = traceback.format_exception(e, e, e.__traceback__)
+        print(formatted_exception)
+        try:
+            # Increment NVM error counter
+            cubesat.c_state_err+=1
+            # Try logging the error in log.txt on the SD card
+            cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
+        except:
+            pass
 
-# If all other fault-handling fails, hard reset PyCubed
-hardReset()
+# If batteries are not sufficiently charged, enter lower power mode to charge the batteries 
+# Charge until batteries are fully charged
+else:
+    print("Entering low power mode...")

@@ -25,7 +25,7 @@ class task(Task):
             comp_var = '>'
         else:
             comp_var = '<'
-
+        
         self.debug('{:.1f}V {} threshold: {:.1f}V'.format(vbatt,comp_var,self.cubesat.vlowbatt))
 
         ########### ADVANCED ###########
