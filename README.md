@@ -11,6 +11,5 @@ This repo contains:
 - [bottom-adapter]: Bottom adapter plate w/ solar cells
 - [ISP.pretty]: Custom KiCad footprint library
 - [datasheets]: Datasheets for components 
-- [requirements-docs]: Requirements documents that our mission shall comply with
 
 Visit our website to learn more: [ISP Website](https://isomer.space)
