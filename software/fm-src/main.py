@@ -113,3 +113,4 @@ if cubesat.f_burnedAlready:
 # Charge until batteries are fully charged
 else:
     print("Entering low power mode...")
+    
