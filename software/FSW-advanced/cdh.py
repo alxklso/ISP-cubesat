@@ -35,12 +35,6 @@ def shutdown(self, args):
             self.cubesat.scheduled_tasks[t].stop()
         self.cubesat.powermode('minimum')
 
-        """
-        Exercise for the user:
-            Implement a means of waking up from shutdown
-            See beep-sat guide for more details
-            https://pycubed.org/resources
-        """
         while True:
             time.sleep(100000)
 

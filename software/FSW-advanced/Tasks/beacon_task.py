@@ -4,6 +4,8 @@ from Tasks.template_task import Task
 # SET TO TRUE ONLY AFTER PHYSICALLY ATTACHING ANTENNA
 ANTENNA_ATTACHED = False
 
+# IARU ASSIGNED FREQUENCY = 437.40
+# Freq parameter set in pycubed.py
 
 class task(Task):
     priority = 1
