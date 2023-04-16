@@ -1,5 +1,4 @@
-import os, time, traceback
-import alarm
+import os, time, traceback, alarm
 import lib.tasko as tasko
 from lib.pycubed import cubesat
 
