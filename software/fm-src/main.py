@@ -1,4 +1,5 @@
 import os, time, traceback
+from signal import alarm
 import lib.tasko as tasko
 from lib.pycubed import cubesat
 
@@ -43,8 +44,7 @@ def hardReset():
 
 time.sleep(180) # Delay after pod deployment
 
-
-while(not cubesat.f_burnedAlready):
+if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     if cubesat.battery_voltage >= 7.8:
         try:
@@ -56,15 +56,17 @@ while(not cubesat.f_burnedAlready):
             time.sleep(3)
         except Exception as e:
             print(e)
-
+    # If batteries are not sufficiently charged, enter lower power mode to charge the batteries 
+    # Charge until batteries are fully charged
     else:
         print("Entering low power mode...")
-        
+        cubesat.powermode('min')
+        sleep_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 180)
+        # Sleeps the cubesat until the alarm sounds, then it runs main.py again
+        alarm.exit_and_deep_sleep_until_alarms(sleep_alarm)
+else:
+    print("Startup routine successful! Starting main portion...")
 
-
-print("Startup routine successful! Starting main portion...")
-
-if cubesat.f_burnedAlready:
     # Schedule tasks
     cubesat.tasko = tasko
     cubesat.scheduled_tasks={}
@@ -108,9 +110,3 @@ if cubesat.f_burnedAlready:
             cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
         except:
             pass
-
-# If batteries are not sufficiently charged, enter lower power mode to charge the batteries 
-# Charge until batteries are fully charged
-else:
-    print("Entering low power mode...")
-    
