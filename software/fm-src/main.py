@@ -1,5 +1,5 @@
 import os, time, traceback
-from signal import alarm
+import alarm
 import lib.tasko as tasko
 from lib.pycubed import cubesat
 
