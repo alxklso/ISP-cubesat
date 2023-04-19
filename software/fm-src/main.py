@@ -12,8 +12,11 @@ a first-time startup burn-wire section, as well as batt pack voltage check.
 
 cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
 cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
+cubesat.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
 
 ############# CONFIGURATION END ############# 
+
+
 
 ############# HELPER FUNCTIONS START ############# 
 
@@ -57,7 +60,8 @@ if not cubesat.f_burnedAlready:
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
             print("Burning uwu")
-            #cubesat.burn("1", 0.10, 1200, 1)
+            if cubesat.burn_enabled:
+                cubesat.burn("1", 0.10, 1200, 1)
             cubesat.f_burnedAlready = True  # Set bit flag
             print(f"Post-burn NVM bit status: {cubesat.f_burnedAlready}")
             time.sleep(3)

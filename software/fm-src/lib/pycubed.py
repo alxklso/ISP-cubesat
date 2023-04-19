@@ -57,6 +57,8 @@ class Satellite:
         self.benchtop_testing = False
         # Define if antenna is attached or not
         self.antenna_attached = False
+        # Define if burn is enabled
+        self.burn_enabled = False
 
         self.BOOTTIME = const(time.time())
         self.data_cache = {}
