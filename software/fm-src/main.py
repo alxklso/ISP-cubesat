@@ -7,7 +7,12 @@ from lib.pycubed import cubesat
 FSW MAIN: Creates a queue of scheduled tasks that runs forever. Includes
 a first-time startup burn-wire section, as well as batt pack voltage check.
 """
-
+"""
+IMPORTANT: Make sure to set the configuration below to the following before launch
+cubesat.antenna_attached = True
+cubesat.benchtop_testing = False
+cubesat.burn_enabled = True
+"""
 ############# CONFIGURATION START ############# 
 
 cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
