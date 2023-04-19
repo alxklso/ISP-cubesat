@@ -15,11 +15,13 @@ IMPORTANT: Make sure to set the configuration below to the following before laun
 cubesat.antenna_attached = True
 cubesat.benchtop_testing = False
 cubesat.burn_enabled = True
+cubesat.i2c_payload = True
 """
 
 cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
 cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
 cubesat.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
+cubesat.i2c_payload = False # IMPORTANT: Set to true when you attach CW payload
 
 ############# CONFIGURATION END ############# 
 
@@ -57,8 +59,8 @@ def hardReset():
 
 ############# MAIN PORTION START #############
 
-if not cubesat.benchtop_testing:
-    time.sleep(180) # Delay after pod deployment
+    if not cubesat.benchtop_testing:
+        time.sleep(180) # Delay after pod deployment
 
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
@@ -98,7 +100,10 @@ else:
         file = file[:-3]
 
         # Ignore these files
-        if file in ("template_task","test_task","listen_task") or file.startswith('._'):
+        disabled_tasks = ["template_task","test_task","listen_task"]
+        if not cubesat.i2c_payload:
+            disabled_tasks.append("cw_task")
+        if file in disabled_tasks or file.startswith('._'):
             continue
 
         # Import task file
