@@ -2,6 +2,7 @@ import time
 from Tasks.template_task import Task
 import msgpack
 from os import stat
+import adafruit_veml7700
 
 """
 Every 2 minutes, this task turns on the Cosmic Watch for 1 minute, takes
@@ -18,10 +19,11 @@ SEND_DATA = False
 class task(Task):
     priority = 10 # Set to low priority for now
     # TEST FREQ - 2 MINUTES, CHANGE TO 10 MINUTES AFTER VERIFICATION
-    frequency = 1/120  
+    frequency = 1/120 
     name = 'cosmic watch'
     color = 'gray'
     data_file = None
+    sensor = None
 
     # Set to True to skip first cycle of task
     schedule_later = False
@@ -30,6 +32,7 @@ class task(Task):
     # so perform our task init and use that as a chance to init the data files
     def __init__(self,satellite):
         super().__init__(satellite)
+        self.sensor = adafruit_veml7700.VEML7700(self.cubesat.i2c2)
         self.data_file=self.cubesat.new_file('/sd/cw',binary=True)
 
     async def main_task(self):
@@ -37,20 +40,21 @@ class task(Task):
         if self.data_file is not None:
             # Create start time using UNIX epoch time 
             # Used for file naming and to check when the task is finished
+            print("Starting measurements")
             with open(self.data_file,'ab') as f:
                 startTime = time.time()
-                while (time.time() - startTime) < 60:
-                    rawData = self.cubesat.i2c2.read()
-                    dataDecoded = rawData.decode("utf-8")
+                while (time.time() - startTime) < 3:
                     readings = {
                         'time': time.time(),
-                        'voltage': dataDecoded
+                        'voltage': self.sensor.light
                     }
+                    print("Measured {} at time {}".format(self.sensor.light, time.time()))
                     msgpack.pack(readings, f)
                     time.sleep(0.5)
 
             # check if the file is getting bigger than we'd like
             if stat(self.data_file)[6] >= 256: # bytes
+                print("File reached 256 bytes... Sending")
                 if SEND_DATA:
                     print('\nSend CW data file: {}'.format(self.data_file))
                     with open(self.data_file,'rb') as f:
@@ -61,7 +65,6 @@ class task(Task):
                             print(chunk)
                             chunk = f.read(64)
                     print('finished\n')
-
                 else:
                     # print the unpacked data from the file
                     print('\nPrinting CW data file: {}'.format(self.data_file))
@@ -70,10 +73,5 @@ class task(Task):
                             try: print('\t', msgpack.unpack(f))
                             except: break
                     print('finished\n')
-            
-            self.data_file = self.cubesat.new_file('/sd/cw')
 
-        # Debugging section
-        self.debug("test start: {}".format(time.monotonic()))
-        await self.cubesat.tasko.sleep(10)
-        self.debug("test stop: {}".format(time.monotonic()))
+                self.data_file = self.cubesat.new_file('/sd/cw')
