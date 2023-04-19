@@ -19,7 +19,7 @@ SEND_DATA = False
 class task(Task):
     priority = 10 # Set to low priority for now
     # TEST FREQ - 2 MINUTES, CHANGE TO 10 MINUTES AFTER VERIFICATION
-    frequency = 1/120 
+    frequency = 1/120
     name = 'cosmic watch'
     color = 'gray'
     data_file = None
@@ -43,7 +43,7 @@ class task(Task):
             print("Starting measurements")
             with open(self.data_file,'ab') as f:
                 startTime = time.time()
-                while (time.time() - startTime) < 3:
+                while (time.time() - startTime) < 60:
                     readings = {
                         'time': time.time(),
                         'voltage': self.sensor.light
