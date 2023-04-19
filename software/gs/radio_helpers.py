@@ -31,6 +31,7 @@ class GroundStation:
     last_rssi=0
 
     SATELLITE = {
+        'COYOTESAT':{'NAME':'COYOTESAT','FREQ':437.40,'SF':10,'BW':250000,'CR':8},
         'NORBI':{'NAME':'NORBI','FREQ':436.703,'SF':10,'BW':250000,'CR':8},
         'VR3X' :{'NAME':'VR3X','FREQ':915.6,'SF':7,'BW':62500,'CR':8}
     }

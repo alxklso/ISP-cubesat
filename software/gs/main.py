@@ -1,3 +1,12 @@
+"""
+Main code for PyGS ground station. Originally created by Max Holliday, modified
+by the ISP software team.
+
+- IARU Coordination Frequency: 437.40 MHz
+- Satellite ID: COYOTESAT 
+- PM Alex on Discord for ssid and password params in radiohelpers.py
+"""
+
 import wifi, socketpool, time, alarm
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from radio_helpers import gs, mqtt_message, connected
@@ -8,7 +17,7 @@ from binascii import hexlify
 gs.ID = 'A'
 DATA_TOPIC = 'gs/testsub'
 CTRL_TOPIC = 'gs/remote'+gs.ID
-SAT = gs.SATELLITE['NORBI']
+SAT = gs.SATELLITE['COYOTESAT']
 
 radios=[]
 # if we haven't slept yet, init radios 
