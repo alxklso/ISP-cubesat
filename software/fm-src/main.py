@@ -41,7 +41,7 @@ def hardReset():
 
 ############# MAIN PORTION START ############# 
 
-time.sleep(180) # Delay after pod deployment
+#time.sleep(180) # Delay after pod deployment
 
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
@@ -78,7 +78,7 @@ else:
         file = file[:-3]
 
         # Ignore these files
-        if file in ("template_task","test_task","listen_task", "cw_task") or file.startswith('._'):
+        if file in ("template_task","test_task","listen_task") or file.startswith('._'):
             continue
 
         # Import task file
