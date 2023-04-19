@@ -112,3 +112,10 @@ else:
             cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
         except:
             pass
+
+# we shouldn't be here!
+print('Engaging fail safe: hard reset')
+from time import sleep
+sleep(10)
+cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
+cubesat.micro.reset()
