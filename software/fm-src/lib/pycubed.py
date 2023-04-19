@@ -53,6 +53,11 @@ class Satellite:
         """
         Big init routine as the whole board is brought up.
         """
+        # Define whether cubesat is in benchtop testing mode or not
+        self.benchtop_testing = False
+        # Define if antenna is attached or not
+        self.antenna_attached = False
+
         self.BOOTTIME = const(time.time())
         self.data_cache = {}
         self.filenumbers = {}
