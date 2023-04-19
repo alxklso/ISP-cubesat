@@ -1,9 +1,6 @@
 import cdh
 from Tasks.template_task import Task
 
-# SET TO TRUE ONLY AFTER PHYSICALLY ATTACHING ANTENNA
-ANTENNA_ATTACHED = False
-
 # IARU ASSIGNED FREQUENCY = 437.40
 # Freq parameter set in pycubed.py
 
@@ -36,10 +33,10 @@ class task(Task):
     async def main_task(self):
         """
         If you've attached a 433MHz antenna,
-        set the above ANTENNA_ATTACHED variable to True
+        set the ANTENNA_ATTACHED variable to True in main.py
         to actually send the beacon packet
         """
-        if ANTENNA_ATTACHED:
+        if self.cubesat.antenna_attached:
             self.debug("Sending beacon")
             self.cubesat.radio1.send("Hello World!", destination = 0xFF, keep_listening = True)
         else:
@@ -68,7 +65,7 @@ class task(Task):
                 See beep-sat guide for more details
                 """
                 if len(response) >= 6:
-                    if not ANTENNA_ATTACHED:
+                    if not self.cubesat.antenna_attached:
                         self.debug("Antenna not attached. Skipping over-the-air command handling")
                     else:
                         if response[:4] == self.super_secret_code:

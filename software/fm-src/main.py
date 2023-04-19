@@ -8,6 +8,12 @@ FSW MAIN: Creates a queue of scheduled tasks that runs forever. Includes
 a first-time startup burn-wire section, as well as batt pack voltage check.
 """
 
+############# CONFIGURATION START ############# 
+
+cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
+cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
+
+############# CONFIGURATION END ############# 
 
 ############# HELPER FUNCTIONS START ############# 
 
@@ -39,7 +45,7 @@ def hardReset():
 
 
 
-############# MAIN PORTION START ############# 
+############# MAIN PORTION START #############
 
 #time.sleep(180) # Delay after pod deployment
 
