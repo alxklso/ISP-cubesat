@@ -59,7 +59,6 @@ if not cubesat.f_burnedAlready:
         cubesat.powermode('norm')
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
-            print("Burning uwu")
             if cubesat.burn_enabled:
                 cubesat.burn("1", 0.10, 1200, 1)
             cubesat.f_burnedAlready = True  # Set bit flag
