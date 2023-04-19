@@ -50,7 +50,8 @@ def hardReset():
 
 ############# MAIN PORTION START #############
 
-#time.sleep(180) # Delay after pod deployment
+if not cubesat.benchtop_testing:
+    time.sleep(180) # Delay after pod deployment
 
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
