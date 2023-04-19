@@ -72,7 +72,10 @@ if not cubesat.f_burnedAlready:
         print("Entering low power mode...")
         cubesat.f_lowbatt = True
         cubesat.powermode('min')
-        sleep_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 180)
+        sleep_amount = 600
+        if cubesat.benchtop_testing:
+            sleep_alarm = 20
+        sleep_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_alarm)
         # Sleeps the cubesat until the alarm sounds, then it runs main.py again
         alarm.exit_and_deep_sleep_until_alarms(sleep_alarm)
 else:
