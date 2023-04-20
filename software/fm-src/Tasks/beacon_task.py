@@ -96,5 +96,3 @@ class task(Task):
             self.debug('no messages')
         self.cubesat.radio1.sleep()
         self.debug('finished')
-
-

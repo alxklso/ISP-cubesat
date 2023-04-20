@@ -21,7 +21,6 @@ from os import listdir, stat, statvfs, mkdir, chdir
 from bitflags import bitFlag,multiBitFlag,multiByte
 from micropython import const
 
-
 # NVM register numbers
 _BOOTCNT  = const(0)
 _VBUSRST  = const(6)
@@ -105,8 +104,7 @@ class Satellite:
         _rf_rst1 = digitalio.DigitalInOut(board.RF1_RST)
         self.enable_rf = digitalio.DigitalInOut(board.EN_RF)
         self.radio1_DIO0 = digitalio.DigitalInOut(board.RF1_IO0)
-        self.enable_rf.switch_to_output(value=False) # if U21, FM boards have U21 populated
-        # self.enable_rf.switch_to_output(value = True) # if U7
+        self.enable_rf.switch_to_output(value = False) # if U21, FM boards have U21 populated
         _rf_cs1.switch_to_output(value = True)
         _rf_rst1.switch_to_output(value = True)
         self.radio1_DIO0.switch_to_input()
@@ -114,7 +112,7 @@ class Satellite:
         # Initialize SD card (always init SD before anything else on spi bus)
         try:
             # Baud rate depends on the card, 4MHz should be safe
-            _sd = sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
+            _sd = sdcardio.SDCard(self.spi, board.SD_CS, baudrate = 4000000)
             _vfs = VfsFat(_sd)
             mount(_vfs, "/sd")
             self.fs=_vfs
@@ -126,7 +124,7 @@ class Satellite:
 
         # Initialize Neopixel
         try:
-            self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2, pixel_order=neopixel.GRB)
+            self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2, pixel_order = neopixel.GRB)
             self.neopixel[0] = (0,0,0)
             self.hardware['Neopixel'] = True
         except Exception as e:
@@ -137,9 +135,9 @@ class Satellite:
             self.usb = bq25883.BQ25883(self.i2c1)
             self.usb.charging = False
             self.usb.wdt = False
-            self.usb.led=False
-            self.usb.charging_current=8 #400mA
-            self.usb_charging=False
+            self.usb.led = False
+            self.usb.charging_current = 8 #400mA
+            self.usb_charging = False
             self.hardware['USB'] = True
         except Exception as e:
             if self.debug: print('[ERROR][USB Charger]',e)
@@ -157,12 +155,12 @@ class Satellite:
         try:
             # IARU assigned frequency = 437.40 MHz
             self.radio1 = pycubed_rfm9x.RFM9x(self.spi, _rf_cs1, _rf_rst1,
-                437.40, code_rate=8, baudrate=1320000)
+                437.40, code_rate = 8, baudrate=1320000)
             # Default LoRa Modulation Settings
-            # Frequency: 433 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
-            self.radio1.dio0=self.radio1_DIO0
-            self.radio1.enable_crc=True
-            self.radio1.ack_delay=0.2
+            # Frequency: 437.4 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
+            self.radio1.dio0 = self.radio1_DIO0
+            self.radio1.enable_crc = True
+            self.radio1.ack_delay = 0.2
             self.radio1.sleep()
             self.hardware['Radio1'] = True
         except Exception as e:
@@ -173,9 +171,9 @@ class Satellite:
 
     def reinit(self,dev):
         dev=dev.lower()
-        if dev=='pwr':
+        if dev == 'pwr':
             self.pwr.__init__(self.i2c1)
-        elif dev=='usb':
+        elif dev == 'usb':
             self.usb.__init__(self.i2c1)
         else:
             print('Invalid Device? ->',dev)
@@ -206,16 +204,16 @@ class Satellite:
     @charge_batteries.setter
     def charge_batteries(self,value):
         if self.hardware['USB']:
-            self.usb_charging=value
-            self.usb.led=value
-            self.usb.charging=value
+            self.usb_charging = value
+            self.usb.led = value
+            self.usb.charging = value
 
     @property
     def battery_voltage(self):
-        _vbat=0
+        _vbat = 0
         for _ in range(50):
-            _vbat+=self._vbatt.value * 3.3 / 65536
-        _voltage = (_vbat/50)*(316+110)/110 # 316/110 voltage divider
+            _vbat += self._vbatt.value * 3.3 / 65536
+        _voltage = (_vbat/50) * (316 + 110) / 110 # 316/110 voltage divider
         return _voltage # volts
 
     @property
@@ -235,13 +233,13 @@ class Satellite:
         NOT accurate if powered via USB
         """
         if self.hardware['PWR']:
-            idraw=0
+            idraw = 0
             try:
                 for _ in range(50): # average 50 readings
-                    idraw+=self.pwr.read()[1]
-                return (idraw/50)*1000 # mA
+                    idraw += self.pwr.read()[1]
+                return (idraw / 50) * 1000 # mA
             except Exception as e:
-                print('[WARNING][PWR Monitor]',e)
+                print('[WARNING][PWR Monitor]', e)
         else:
             print('[WARNING] Power monitor not initialized')
 
@@ -253,7 +251,7 @@ class Satellite:
         _charge = 0
         if self.solar_charging:
             _charge = self._ichrg.value * 3.3 / 65536
-            _charge = ((_charge*988)/3010)*1000
+            _charge = ((_charge * 988) / 3010) * 1000
         return _charge # mA
 
     @property
@@ -271,17 +269,17 @@ class Satellite:
             except Exception as e:
                 print('vbus reset error?', e)
                 pass
-        self._resetReg.drive_mode=digitalio.DriveMode.PUSH_PULL
-        self._resetReg.value=1
+        self._resetReg.drive_mode = digitalio.DriveMode.PUSH_PULL
+        self._resetReg.value = 1
 
     def log(self, msg):
         if self.hardware['SDcard']:
             with open(self.logfile, "a+") as f:
-                t=int(time.monotonic())
-                f.write('{}, {}\n'.format(t,msg))
+                t = int(time.monotonic())
+                f.write('{}, {}\n'.format(t, msg))
 
-    def print_file(self,filedir=None,binary=False):
-        if filedir==None:
+    def print_file(self,filedir = None, binary = False):
+        if filedir == None:
             return
         print('\n--- Printing File: {} ---'.format(filedir))
         if binary:
@@ -296,7 +294,7 @@ class Satellite:
     def timeout_handler(self):
         print('Incrementing timeout register')
         if (self.micro.nvm[_TOUTS] + 1) >= 255:
-            self.micro.nvm[_TOUTS]=0
+            self.micro.nvm[_TOUTS] = 0
             # soft reset
             self.micro.on_next_reset(self.micro.RunMode.NORMAL)
             self.micro.reset()
@@ -325,43 +323,42 @@ class Satellite:
             self.power_mode = 'normal'
             # don't forget to reconfigure radios, gps, etc...
 
-    def new_file(self,substring,binary=False):
+    def new_file(self,substring,binary = False):
         '''
         substring something like '/data/DATA_'
         directory is created on the SD!
         int padded with zeros will be appended to the last found file
         '''
         if self.hardware['SDcard']:
-            ff=''
-            n=0
-            _folder=substring[:substring.rfind('/')+1]
-            _file=substring[substring.rfind('/')+1:]
-            print('Creating new file in directory: /sd{} with file prefix: {}'.format(_folder,_file))
-            try: chdir('/sd'+_folder)
+            ff = ''
+            n = 0
+            _folder = substring[:substring.rfind('/') + 1]
+            _file = substring[substring.rfind('/') + 1:]
+            print('Creating new file in directory: /sd{} with file prefix: {}'.format(_folder, _file))
+            try: chdir('/sd' + _folder)
             except OSError:
                 print('Directory {} not found. Creating...'.format(_folder))
-                try: mkdir('/sd'+_folder)
+                try: mkdir('/sd' + _folder)
                 except Exception as e:
                     print(e)
                     return None
             for i in range(0xFFFF):
-                ff='/sd{}{}{:05}.txt'.format(_folder,_file,(n+i)%0xFFFF)
+                ff = '/sd{}{}{:05}.txt'.format(_folder, _file, (n+i)%0xFFFF)
                 try:
                     if n is not None:
                         stat(ff)
                 except:
-                    n=(n+i)%0xFFFF
-                    # print('file number is',n)
+                    n = (n+i)%0xFFFF
                     break
-            print('creating file...',ff)
-            if binary: b='ab'
-            else: b='a'
-            with open(ff,b) as f:
+            print('Creating file...',ff)
+            if binary: b = 'ab'
+            else: b = 'a'
+            with open(ff, b) as f:
                 f.tell()
             chdir('/')
             return ff
 
-    def burn(self,burn_num,dutycycle=0,freq=1000,duration=1):
+    def burn(self, burn_num, dutycycle = 0, freq = 1000, duration = 1):
         """
         Operate burn wire circuits. Wont do anything unless the a nichrome burn wire
         has been installed.
@@ -375,33 +372,33 @@ class Satellite:
         duration:  (float) duration in seconds the burn wire should be on
         """
         # convert duty cycle % into 16-bit fractional up time
-        dtycycl=int((dutycycle/100)*(0xFFFF))
+        dtycycl = int((dutycycle/100)*(0xFFFF))
         print('----- BURN WIRE CONFIGURATION -----')
-        print('\tFrequency of: {}Hz\n\tDuty cycle of: {}% (int:{})\n\tDuration of {}sec'.format(freq,(100*dtycycl/0xFFFF),dtycycl,duration))
+        print('\tFrequency of: {}Hz\n\tDuty cycle of: {}% (int:{})\n\tDuration of {}sec'.format(freq, (100*dtycycl/0xFFFF), dtycycl, duration))
         # create our PWM object for the respective pin
         # not active since duty_cycle is set to 0 (for now)
         if '1' in burn_num:
-            burnwire = pwmio.PWMOut(board.BURN1, frequency=freq, duty_cycle=0)
+            burnwire = pwmio.PWMOut(board.BURN1, frequency = freq, duty_cycle = 0)
         elif '2' in burn_num:
-            burnwire = pwmio.PWMOut(board.BURN2, frequency=freq, duty_cycle=0)
+            burnwire = pwmio.PWMOut(board.BURN2, frequency = freq, duty_cycle = 0)
         else:
             return False
         # Configure the relay control pin & open relay
-        self._relayA.drive_mode=digitalio.DriveMode.PUSH_PULL
+        self._relayA.drive_mode = digitalio.DriveMode.PUSH_PULL
         self._relayA.value = 1
-        self.RGB=(255,0,0)
+        self.RGB = (255, 0, 0)
         # Pause to ensure relay is open
         time.sleep(0.5)
         # Set the duty cycle over 0%
         # This starts the burn!
-        burnwire.duty_cycle=dtycycl
+        burnwire.duty_cycle = dtycycl
         time.sleep(duration)
         # Clean up
         self._relayA.value = 0
-        burnwire.duty_cycle=0
-        self.RGB=(0,0,0)
+        burnwire.duty_cycle = 0
+        self.RGB = (0, 0, 0)
         burnwire.deinit()
-        self._relayA.drive_mode=digitalio.DriveMode.OPEN_DRAIN
+        self._relayA.drive_mode = digitalio.DriveMode.OPEN_DRAIN
         return True
 
 cubesat = Satellite()
