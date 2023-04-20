@@ -139,8 +139,5 @@ else:
             pass
 
 # we shouldn't be here!
-print('Engaging fail safe: hard reset')
-from time import sleep
-sleep(10)
-cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
-cubesat.micro.reset()
+# Hard reset if all other fault-handling measures fail
+hardReset()
