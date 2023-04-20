@@ -66,7 +66,7 @@ if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     if cubesat.battery_voltage >= 7.8:
         cubesat.f_lowbatt = False
-        cubesat.powermode('norm')
+        cubesat.powermode("norm")
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
             if cubesat.burn_enabled:
@@ -81,7 +81,7 @@ if not cubesat.f_burnedAlready:
     else:
         print("Entering low power mode...")
         cubesat.f_lowbatt = True
-        cubesat.powermode('min')
+        cubesat.powermode("min")
         sleep_amount = 600
         if cubesat.benchtop_testing:
             sleep_alarm = 3
@@ -100,18 +100,18 @@ else:
         file = file[:-3]
 
         # Ignore these files
-        disabled_tasks = ["template_task","listen_task"]
+        disabled_tasks = ["template_task", "listen_task"]
         if not cubesat.i2c_payload:
             disabled_tasks.append("cw_task")
         if file in disabled_tasks or file.startswith('._'):
             continue
 
         # Import task file
-        exec('import Tasks.{}'.format(file))
-        task_obj = eval('Tasks.'+file).task(cubesat)
+        exec(f"Import Tasks.{file}")
+        task_obj = eval("Tasks." + file).task(cubesat)
 
         # Tasks scheduled for later 
-        if hasattr(task_obj, 'schedule_later') and getattr(task_obj, 'schedule_later'):
+        if hasattr(task_obj, "schedule_later") and getattr(task_obj, "schedule_later"):
             schedule = cubesat.tasko.schedule_later
         else:
             schedule = cubesat.tasko.schedule
@@ -134,13 +134,12 @@ else:
             # Increment NVM error counter
             cubesat.c_state_err+=1
             # Try logging the error in log.txt on the SD card
-            cubesat.log('{},{},{}'.format(formatted_exception, cubesat.c_state_err, cubesat.c_boot))
+            cubesat.log(f"{formatted_exception},{cubesat.c_state_err},{cubesat.c_boot}")
         except:
             pass
 
-# we shouldn't be here!
-print('Engaging fail safe: hard reset')
-from time import sleep
-sleep(10)
+# We shouldn't be here!
+print("Engaging fail safe: hard reset")
+time.sleep(10)
 cubesat.micro.on_next_reset(cubesat.micro.RunMode.NORMAL)
 cubesat.micro.reset()

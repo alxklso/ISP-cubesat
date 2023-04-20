@@ -28,8 +28,8 @@ class task(Task):
     # TEST FREQ = 2 MINUTES (FREQ = 1/120)
     # FLIGHT FREQ = 10 MINUTES (FREQ = 1/600)
     frequency = 1/120
-    name = 'cosmic watch'
-    color = 'gray'
+    name = "cosmic watch"
+    color = "gray"
     data_file = None
     sensor = None
 
@@ -41,7 +41,7 @@ class task(Task):
     def __init__(self, satellite):
         super().__init__(satellite)
         self.sensor = adafruit_veml7700.VEML7700(self.cubesat.i2c2)
-        self.data_file = self.cubesat.new_file('/sd/cw', binary = True)
+        self.data_file = self.cubesat.new_file("/sd/cw", binary = True)
 
     async def main_task(self):
 
@@ -49,14 +49,14 @@ class task(Task):
             # Create start time using UNIX epoch time 
             # Used for file naming and to check when the task is finished
             print("Starting measurements")
-            with open(self.data_file, 'ab') as f:
+            with open(self.data_file, "ab") as f:
                 startTime = time.time()
                 while (time.time() - startTime) < 60:
                     readings = {
-                        'time': time.time(),
-                        'voltage': self.sensor.light
+                        "time": time.time(),
+                        "voltage": self.sensor.light
                     }
-                    print("Measured {} at time {}".format(self.sensor.light, time.time()))
+                    print(f"Measured {self.sensor.light} at time {time.time()}")
                     msgpack.pack(readings, f)
                     time.sleep(0.5)
 
@@ -64,22 +64,22 @@ class task(Task):
             if stat(self.data_file)[6] >= 256: # Bytes
                 print("File reached 256 bytes... Sending")
                 if SEND_DATA:
-                    print('\nSend CW data file: {}'.format(self.data_file))
-                    with open(self.data_file, 'rb') as f:
+                    print(f"\nSend CW data file: {self.data_file}")
+                    with open(self.data_file, "rb") as f:
                         chunk = f.read(64) # Each reading is 64 bytes when encoded
                         while chunk:
                             # We could send bigger chunks, radio packet can take 252 bytes
                             self.cubesat.radio1.send(chunk)
                             print(chunk)
                             chunk = f.read(64)
-                    print('finished\n')
+                    print("Finished\n")
                 else:
                     # Print the unpacked data from the file
-                    print('\nPrinting CW data file: {}'.format(self.data_file))
-                    with open(self.data_file, 'rb') as f:
+                    print(f"\nPrinting CW data file: {self.data_file}")
+                    with open(self.data_file, "rb") as f:
                         while True:
-                            try: print('\t', msgpack.unpack(f))
+                            try: print("\t", msgpack.unpack(f))
                             except: break
-                    print('finished\n')
+                    print("Finished\n")
 
-                self.data_file = self.cubesat.new_file('/sd/cw')
+                self.data_file = self.cubesat.new_file("/sd/cw")

@@ -5,7 +5,7 @@ CircuitPython driver for PyCubed satellite board
 # Common CircuitPython Libs
 import board, microcontroller
 import busio, time, sys
-from storage import mount,umount,VfsFat
+from storage import mount, umount, VfsFat
 from analogio import AnalogIn
 import lib.tasko as tasko 
 import digitalio, sdcardio, pwmio
@@ -34,19 +34,19 @@ SEND_BUFF = bytearray(252)
 
 class Satellite:
     # General NVM counters
-    c_boot      = multiBitFlag(register=_BOOTCNT, lowest_bit=0,num_bits=8)
-    c_vbusrst   = multiBitFlag(register=_VBUSRST, lowest_bit=0,num_bits=8)
-    c_state_err = multiBitFlag(register=_STATECNT,lowest_bit=0,num_bits=8)
-    c_gs_resp   = multiBitFlag(register=_GSRSP,   lowest_bit=0,num_bits=8)
-    c_ichrg     = multiBitFlag(register=_ICHRG,   lowest_bit=0,num_bits=8)
+    c_boot      = multiBitFlag(register = _BOOTCNT,  lowest_bit = 0, num_bits = 8)
+    c_vbusrst   = multiBitFlag(register = _VBUSRST,  lowest_bit = 0, num_bits = 8)
+    c_state_err = multiBitFlag(register = _STATECNT, lowest_bit = 0, num_bits = 8)
+    c_gs_resp   = multiBitFlag(register = _GSRSP,    lowest_bit = 0, num_bits = 8)
+    c_ichrg     = multiBitFlag(register = _ICHRG,    lowest_bit = 0, num_bits = 8)
 
     # Define NVM flags
-    f_lowbatt       = bitFlag(register=_FLAG,bit=0)
-    f_solar         = bitFlag(register=_FLAG,bit=1)
-    f_burnedAlready = bitFlag(register=_FLAG,bit=2) # For burn wire usage
-    f_lowbtout      = bitFlag(register=_FLAG,bit=3)
-    f_gpsfix        = bitFlag(register=_FLAG,bit=4)
-    f_shtdwn        = bitFlag(register=_FLAG,bit=5)
+    f_lowbatt       = bitFlag(register = _FLAG, bit = 0)
+    f_solar         = bitFlag(register = _FLAG, bit = 1)
+    f_burnedAlready = bitFlag(register = _FLAG, bit = 2) # For burn wire usage
+    f_lowbtout      = bitFlag(register = _FLAG, bit = 3)
+    f_gpsfix        = bitFlag(register = _FLAG, bit = 4)
+    f_shtdwn        = bitFlag(register = _FLAG, bit = 5)
 
     def __init__(self):
         """
@@ -69,11 +69,11 @@ class Satellite:
         self.debug = True
         self.micro = microcontroller
         self.hardware = {
-                       'Radio1': False,
-                       'SDcard': False,
-                       'WDT':    False,
-                       'USB':    False,
-                       'PWR':    False}
+                       "Radio1": False,
+                       "SDcard": False,
+                       "WDT":    False,
+                       "USB":    False,
+                       "PWR":    False}
 
         # Define burn wires:
         self._relayA = digitalio.DigitalInOut(board.RELAY_A)
@@ -90,9 +90,9 @@ class Satellite:
         self._chrg.switch_to_input()
 
         # Define SPI, I2C, UART
-        self.i2c1 = busio.I2C(board.SCL,board.SDA)
+        self.i2c1 = busio.I2C(board.SCL, board.SDA)
         self.spi = board.SPI()
-        self.uart = busio.UART(board.TX,board.RX)
+        self.uart = busio.UART(board.TX, board.RX)
         if self.i2c_payload:
             self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
 
@@ -117,7 +117,7 @@ class Satellite:
             mount(_vfs, "/sd")
             self.fs=_vfs
             sys.path.append("/sd")
-            self.hardware['SDcard'] = True
+            self.hardware["SDcard"] = True
             self.logfile = "/sd/log.txt"
         except Exception as e:
             if self.debug: print("[ERROR][SD Card]", e)
@@ -126,9 +126,9 @@ class Satellite:
         try:
             self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness = 0.2, pixel_order = neopixel.GRB)
             self.neopixel[0] = (0,0,0)
-            self.hardware['Neopixel'] = True
+            self.hardware["Neopixel"] = True
         except Exception as e:
-            if self.debug: print('[WARNING][Neopixel]', e)
+            if self.debug: print("[WARNING][Neopixel]", e)
 
         # Initialize USB charger
         try:
@@ -138,17 +138,17 @@ class Satellite:
             self.usb.led = False
             self.usb.charging_current = 8 #400mA
             self.usb_charging = False
-            self.hardware['USB'] = True
+            self.hardware["USB"] = True
         except Exception as e:
-            if self.debug: print('[ERROR][USB Charger]', e)
+            if self.debug: print("[ERROR][USB Charger]", e)
 
         # Initialize Power Monitor
         try:
             self.pwr = adm1176.ADM1176(self.i2c1)
             self.pwr.sense_resistor = 1
-            self.hardware['PWR'] = True
+            self.hardware["PWR"] = True
         except Exception as e:
-            if self.debug: print('[ERROR][Power Monitor]', e)
+            if self.debug: print("[ERROR][Power Monitor]", e)
 
 
         # Initialize radio #1 - UHF
@@ -162,21 +162,21 @@ class Satellite:
             self.radio1.enable_crc = True
             self.radio1.ack_delay = 0.2
             self.radio1.sleep()
-            self.hardware['Radio1'] = True
+            self.hardware["Radio1"] = True
         except Exception as e:
-            if self.debug: print('[ERROR][RADIO 1]', e)
+            if self.debug: print("[ERROR][RADIO 1]", e)
 
         # set PyCubed power mode
-        self.power_mode = 'normal'
+        self.power_mode = "normal"
 
     def reinit(self,dev):
         dev=dev.lower()
-        if dev == 'pwr':
+        if dev == "pwr":
             self.pwr.__init__(self.i2c1)
-        elif dev == 'usb':
+        elif dev == "usb":
             self.usb.__init__(self.i2c1)
         else:
-            print('Invalid Device? ->', dev)
+            print("Invalid Device? ->", dev)
 
     # For burn wire status
     @property 
@@ -191,19 +191,19 @@ class Satellite:
         return self.neopixel[0]
     @RGB.setter
     def RGB(self,value):
-        if self.hardware['Neopixel']:
+        if self.hardware["Neopixel"]:
             try:
                 self.neopixel[0] = value
             except Exception as e:
-                print('[WARNING]', e)
+                print("[WARNING]", e)
 
     @property
     def charge_batteries(self):
-        if self.hardware['USB']:
+        if self.hardware["USB"]:
             return self.usb_charging
     @charge_batteries.setter
     def charge_batteries(self,value):
-        if self.hardware['USB']:
+        if self.hardware["USB"]:
             self.usb_charging = value
             self.usb.led = value
             self.usb.charging = value
@@ -218,13 +218,13 @@ class Satellite:
 
     @property
     def system_voltage(self):
-        if self.hardware['PWR']:
+        if self.hardware["PWR"]:
             try:
                 return self.pwr.read()[0] # volts
             except Exception as e:
-                print('[WARNING][PWR Monitor]', e)
+                print("[WARNING][PWR Monitor]", e)
         else:
-            print('[WARNING] Power monitor not initialized')
+            print("[WARNING] Power monitor not initialized")
 
     @property
     def current_draw(self):
@@ -232,16 +232,16 @@ class Satellite:
         current draw from batteries
         NOT accurate if powered via USB
         """
-        if self.hardware['PWR']:
+        if self.hardware["PWR"]:
             idraw = 0
             try:
-                for _ in range(50): # average 50 readings
+                for _ in range(50): # Average 50 readings
                     idraw += self.pwr.read()[1]
                 return (idraw / 50) * 1000 # mA
             except Exception as e:
-                print('[WARNING][PWR Monitor]', e)
+                print("[WARNING][PWR Monitor]", e)
         else:
-            print('[WARNING] Power monitor not initialized')
+            print("[WARNING] Power monitor not initialized")
 
     def charge_current(self):
         """
@@ -261,38 +261,38 @@ class Satellite:
     @property
     def reset_vbus(self):
         # unmount SD card to avoid errors
-        if self.hardware['SDcard']:
+        if self.hardware["SDcard"]:
             try:
-                umount('/sd')
+                umount("/sd")
                 self.spi.deinit()
                 time.sleep(3)
             except Exception as e:
-                print('vbus reset error?', e)
+                print("vbus reset error?", e)
                 pass
         self._resetReg.drive_mode = digitalio.DriveMode.PUSH_PULL
         self._resetReg.value = 1
 
     def log(self, msg):
-        if self.hardware['SDcard']:
+        if self.hardware["SDcard"]:
             with open(self.logfile, "a+") as f:
                 t = int(time.monotonic())
-                f.write('{}, {}\n'.format(t, msg))
+                f.write(f"{t}, {msg}\n")
 
     def print_file(self,filedir = None, binary = False):
         if filedir == None:
             return
-        print('\n--- Printing File: {} ---'.format(filedir))
+        print(f"\n--- Printing File: {filedir} ---")
         if binary:
             with open(filedir, "rb") as file:
                 print(file.read())
-                print('')
+                print("")
         else:
             with open(filedir, "r") as file:
                 for line in file:
                     print(line.strip())
 
     def timeout_handler(self):
-        print('Incrementing timeout register')
+        print("Incrementing timeout register")
         if (self.micro.nvm[_TOUTS] + 1) >= 255:
             self.micro.nvm[_TOUTS] = 0
             # soft reset
@@ -306,56 +306,56 @@ class Satellite:
         Configure the hardware for minimum or normal power consumption
         Add custom modes for mission-specific control
         """
-        if 'min' in mode:
+        if "min" in mode:
             self.RGB = (0,0,0)
             self.neopixel.brightness=0
-            if self.hardware['Radio1']:
+            if self.hardware["Radio1"]:
                 self.radio1.sleep()
             self.enable_rf.value = False
-            if self.hardware['PWR']:
-                self.pwr.config('V_ONCE,I_ONCE')
-            self.power_mode = 'minimum'
+            if self.hardware["PWR"]:
+                self.pwr.config("V_ONCE,I_ONCE")
+            self.power_mode = "minimum"
 
-        elif 'norm' in mode:
+        elif "norm" in mode:
             self.enable_rf.value = True
-            if self.hardware['PWR']:
-                self.pwr.config('V_CONT,I_CONT')
-            self.power_mode = 'normal'
+            if self.hardware["PWR"]:
+                self.pwr.config("V_CONT,I_CONT")
+            self.power_mode = "normal"
             # don't forget to reconfigure radios, gps, etc...
 
     def new_file(self,substring,binary = False):
-        '''
+        """
         substring something like '/data/DATA_'
         directory is created on the SD!
         int padded with zeros will be appended to the last found file
-        '''
-        if self.hardware['SDcard']:
-            ff = ''
+        """
+        if self.hardware["SDcard"]:
+            ff = ""
             n = 0
-            _folder = substring[:substring.rfind('/') + 1]
-            _file = substring[substring.rfind('/') + 1:]
-            print('Creating new file in directory: /sd{} with file prefix: {}'.format(_folder, _file))
-            try: chdir('/sd' + _folder)
+            _folder = substring[:substring.rfind("/") + 1]
+            _file = substring[substring.rfind("/") + 1:]
+            print(f"Creating new file in directory: /sd{_folder} with file prefix: {_file}")
+            try: chdir("/sd" + _folder)
             except OSError:
-                print('Directory {} not found. Creating...'.format(_folder))
-                try: mkdir('/sd' + _folder)
+                print(f"Directory {_folder} not found. Creating...")
+                try: mkdir("/sd" + _folder)
                 except Exception as e:
                     print(e)
                     return None
             for i in range(0xFFFF):
-                ff = '/sd{}{}{:05}.txt'.format(_folder, _file, (n+i)%0xFFFF)
+                ff = f"/sd{_folder}{_file}{(n+i)%0xFFFF}.txt"
                 try:
                     if n is not None:
                         stat(ff)
                 except:
                     n = (n+i)%0xFFFF
                     break
-            print('Creating file...',ff)
-            if binary: b = 'ab'
-            else: b = 'a'
+            print("Creating file...", ff)
+            if binary: b = "ab"
+            else: b = "a"
             with open(ff, b) as f:
                 f.tell()
-            chdir('/')
+            chdir("/")
             return ff
 
     def burn(self, burn_num, dutycycle = 0, freq = 1000, duration = 1):
@@ -373,13 +373,13 @@ class Satellite:
         """
         # convert duty cycle % into 16-bit fractional up time
         dtycycl = int((dutycycle/100)*(0xFFFF))
-        print('----- BURN WIRE CONFIGURATION -----')
-        print('\tFrequency of: {}Hz\n\tDuty cycle of: {}% (int:{})\n\tDuration of {}sec'.format(freq, (100*dtycycl/0xFFFF), dtycycl, duration))
+        print("----- BURN WIRE CONFIGURATION -----")
+        print(f"\tFrequency of: {freq}Hz\n\tDuty cycle of: {100*dtycycl/0xFFFF}% (int:{dtycycl})\n\tDuration of {duration}sec")
         # create our PWM object for the respective pin
         # not active since duty_cycle is set to 0 (for now)
-        if '1' in burn_num:
+        if "1" in burn_num:
             burnwire = pwmio.PWMOut(board.BURN1, frequency = freq, duty_cycle = 0)
-        elif '2' in burn_num:
+        elif "2" in burn_num:
             burnwire = pwmio.PWMOut(board.BURN2, frequency = freq, duty_cycle = 0)
         else:
             return False

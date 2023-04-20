@@ -13,8 +13,8 @@ class Task:
 
     priority = 10
     frequency = 1
-    name = 'temp'
-    color = 'gray'
+    name = "temp"
+    color = "gray"
 
     def __init__(self, satellite):
         """
@@ -35,9 +35,9 @@ class Task:
 
         """
         if level == 1:
-            print('{:>30} {}'.format('[' + co(msg = self.name, color = self.color) + ']', msg))
+            print("{:>30} {}".format("[" + co(msg = self.name, color = self.color) + "]", msg))
         else:
-            print('{}{}'.format('\t   └── ', msg))
+            print("{}{}".format("\t   └── ", msg))
 
     async def main_task(self, *args, **kwargs):
         """
