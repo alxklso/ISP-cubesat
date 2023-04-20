@@ -1,7 +1,6 @@
 import time
 from Tasks.template_task import Task
 
-
 """
 This task checks the battery voltage against a voltage threshold 
 to check for low batteries. 
@@ -10,7 +9,7 @@ to check for low batteries.
 class task(Task):
     priority = 3
     frequency = 1/10 # once every 10s
-    name ='vbatt'
+    name = 'vbatt'
     color = 'orange'
 
     timeout = 60*60 # 60 min
@@ -26,7 +25,7 @@ class task(Task):
         else:
             comp_var = '<'
         
-        self.debug('{:.1f}V {} threshold: {:.1f}V'.format(vbatt,comp_var,self.cubesat.vlowbatt))
+        self.debug(f'{vbatt} V {comp_var} threshold: {self.cubesat.vlowbatt} V')
 
         ########### ADVANCED ###########
         # Respond to a low power condition
@@ -36,8 +35,8 @@ class task(Task):
             if self.cubesat.f_lowbtout:
                 self.debug('lowbatt timeout flag set! skipping...')
             else:
-                _timer=time.monotonic()+self.timeout
-                self.debug('low battery detected!',2)
+                _timer = time.monotonic() + self.timeout
+                self.debug('low battery detected!', 2)
                 # stop all tasks
                 for t in self.cubesat.scheduled_tasks:
                     self.cubesat.scheduled_tasks[t].stop()
@@ -46,13 +45,13 @@ class task(Task):
                 while time.monotonic() < _timer:
                     # sleep for half our remaining time
                     _sleeptime = self.timeout/10
-                    self.debug('sleeping for {}s'.format(_sleeptime),2)
+                    self.debug(f'Sleeping for {_sleeptime} s', 2)
                     time.sleep(_sleeptime)
-                    self.debug('vbatt: {:.1f}V'.format(self.cubesat.battery_voltage),2)
-                    vbatt=self.cubesat.battery_voltage
+                    self.debug(f'vbatt: {self.cubesat.battery_voltage}', 2)
+                    vbatt = self.cubesat.battery_voltage
                     if vbatt > self.cubesat.vlowbatt:
-                        self.debug('batteries above threshold',2)
-                        self.cubesat.f_lowbatt=False
+                        self.debug('Batteries above threshold', 2)
+                        self.cubesat.f_lowbatt = False
                         break
 
                     if time.monotonic() > _timer:

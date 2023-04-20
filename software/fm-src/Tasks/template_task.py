@@ -1,7 +1,6 @@
 from debugcolor import co
 
 class Task:
-
     """
     The Task Object.
 
@@ -27,7 +26,7 @@ class Task:
         """
         self.cubesat = satellite
 
-    def debug(self, msg, level=1):
+    def debug(self, msg, level = 1):
         """
         Print a debug message formatted with the task name and color
 
@@ -49,5 +48,3 @@ class Task:
 
         """
         pass
-
-    

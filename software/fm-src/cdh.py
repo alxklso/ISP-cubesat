@@ -1,5 +1,9 @@
 import time
 
+"""
+Consider changing these hex commands if everything else is good 
+and we have time. 
+"""
 commands = {
     b'\x8eb': 'no-op',
     b'\xd4\x9f': 'hreset',

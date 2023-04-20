@@ -120,15 +120,15 @@ class Satellite:
             self.hardware['SDcard'] = True
             self.logfile = "/sd/log.txt"
         except Exception as e:
-            if self.debug: print("[ERROR][SD Card]",e)
+            if self.debug: print("[ERROR][SD Card]", e)
 
         # Initialize Neopixel
         try:
-            self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2, pixel_order = neopixel.GRB)
+            self.neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness = 0.2, pixel_order = neopixel.GRB)
             self.neopixel[0] = (0,0,0)
             self.hardware['Neopixel'] = True
         except Exception as e:
-            if self.debug: print('[WARNING][Neopixel]',e)
+            if self.debug: print('[WARNING][Neopixel]', e)
 
         # Initialize USB charger
         try:
@@ -140,7 +140,7 @@ class Satellite:
             self.usb_charging = False
             self.hardware['USB'] = True
         except Exception as e:
-            if self.debug: print('[ERROR][USB Charger]',e)
+            if self.debug: print('[ERROR][USB Charger]', e)
 
         # Initialize Power Monitor
         try:
@@ -148,14 +148,14 @@ class Satellite:
             self.pwr.sense_resistor = 1
             self.hardware['PWR'] = True
         except Exception as e:
-            if self.debug: print('[ERROR][Power Monitor]',e)
+            if self.debug: print('[ERROR][Power Monitor]', e)
 
 
         # Initialize radio #1 - UHF
         try:
             # IARU assigned frequency = 437.40 MHz
             self.radio1 = pycubed_rfm9x.RFM9x(self.spi, _rf_cs1, _rf_rst1,
-                437.40, code_rate = 8, baudrate=1320000)
+                437.40, code_rate = 8, baudrate = 1320000)
             # Default LoRa Modulation Settings
             # Frequency: 437.4 MHz, SF7, BW125kHz, CR4/8, Preamble=8, CRC=True
             self.radio1.dio0 = self.radio1_DIO0
@@ -164,7 +164,7 @@ class Satellite:
             self.radio1.sleep()
             self.hardware['Radio1'] = True
         except Exception as e:
-            if self.debug: print('[ERROR][RADIO 1]',e)
+            if self.debug: print('[ERROR][RADIO 1]', e)
 
         # set PyCubed power mode
         self.power_mode = 'normal'
@@ -176,7 +176,7 @@ class Satellite:
         elif dev == 'usb':
             self.usb.__init__(self.i2c1)
         else:
-            print('Invalid Device? ->',dev)
+            print('Invalid Device? ->', dev)
 
     # For burn wire status
     @property 
@@ -195,7 +195,7 @@ class Satellite:
             try:
                 self.neopixel[0] = value
             except Exception as e:
-                print('[WARNING]',e)
+                print('[WARNING]', e)
 
     @property
     def charge_batteries(self):
@@ -222,7 +222,7 @@ class Satellite:
             try:
                 return self.pwr.read()[0] # volts
             except Exception as e:
-                print('[WARNING][PWR Monitor]',e)
+                print('[WARNING][PWR Monitor]', e)
         else:
             print('[WARNING] Power monitor not initialized')
 

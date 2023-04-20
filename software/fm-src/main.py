@@ -100,7 +100,7 @@ else:
         file = file[:-3]
 
         # Ignore these files
-        disabled_tasks = ["template_task","test_task","listen_task"]
+        disabled_tasks = ["template_task","listen_task"]
         if not cubesat.i2c_payload:
             disabled_tasks.append("cw_task")
         if file in disabled_tasks or file.startswith('._'):
