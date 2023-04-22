@@ -61,7 +61,7 @@ void loop()
   delay(1000); // Wait 1 second between transmits, could also 'sleep' here!
   Serial.println("Transmitting..."); // Send a message to rf95_server
   
-  char radiopacket[9] = {'p', 0xba, 0xb8, 'C', 0x8e, 'b'};
+  char radiopacket[6] = {'p', 0xba, 0xb8, 'C', 0x8e, 'b'};
   Serial.print("Sending "); Serial.println(radiopacket);
   
   Serial.println("Sending...");
