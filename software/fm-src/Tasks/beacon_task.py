@@ -53,7 +53,7 @@ class task(Task):
 
         if heard_something:
             # retrieve response but don't ACK back unless an antenna is attached
-            response = self.cubesat.radio1.receive(keep_listening = True, with_ack = ANTENNA_ATTACHED)
+            response = self.cubesat.radio1.receive(keep_listening = True, with_ack = self.cubesat.antenna_attached)
             if response is not None:
                 self.debug("Packet received")
                 self.debug(f"msg: {response}, RSSI: {self.cubesat.radio1.last_rssi-137}", 2)
