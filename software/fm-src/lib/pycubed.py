@@ -64,7 +64,8 @@ class Satellite:
         self.BOOTTIME = const(time.time())
         self.data_cache = {}
         self.filenumbers = {}
-        self.vlowbatt = 6.0
+        # TODO: Check vlowbatt = 6.5V threshold consistent throughout software
+        self.vlowbatt = 6.5
         self.send_buff = memoryview(SEND_BUFF)
         self.debug = True
         self.micro = microcontroller
@@ -93,6 +94,8 @@ class Satellite:
         self.i2c1 = busio.I2C(board.SCL, board.SDA)
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
+
+        # TODO: Check i2c2 payload after Aneri's CW code is integrated
         if self.i2c_payload:
             self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
 
@@ -152,8 +155,8 @@ class Satellite:
 
 
         # Initialize radio #1 - UHF
+        # IARU assigned frequency = 437.40 MHz
         try:
-            # IARU assigned frequency = 437.40 MHz
             self.radio1 = pycubed_rfm9x.RFM9x(self.spi, _rf_cs1, _rf_rst1,
                 437.40, code_rate = 8, baudrate = 1320000)
             # Default LoRa Modulation Settings
@@ -178,7 +181,7 @@ class Satellite:
         else:
             print("Invalid Device? ->", dev)
 
-    # For burn wire status
+    # Burn wire status
     @property 
     def burnedAlready(self):
         return self.f_burnedAlready
@@ -229,7 +232,7 @@ class Satellite:
     @property
     def current_draw(self):
         """
-        current draw from batteries
+        Current draw from batteries
         NOT accurate if powered via USB
         """
         if self.hardware["PWR"]:
@@ -370,6 +373,13 @@ class Satellite:
         dutycycle: (float) duty cycle percent, must be 0.0 to 100
         freq:      (float) frequency in Hz of the PWM pulse, default is 1000 Hz
         duration:  (float) duration in seconds the burn wire should be on
+
+
+        EXPERIMENTALLY DETERMINED PARAMS FOR FLIGHT:
+        - burn_num = "1"
+        - dutycycle = 0.10
+        - freq = 1200
+        - duration = 1
         """
         # convert duty cycle % into 16-bit fractional up time
         dtycycl = int((dutycycle/100)*(0xFFFF))

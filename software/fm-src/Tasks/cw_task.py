@@ -14,17 +14,16 @@ is saved in JSON format and uses the msgpack library.
 Data measurement scheme:
 
     measurement = {
-        "time" : unix epoch time,
-        "voltage" : cw voltage meausurement
+        "t" : unix epoch time,
+        "s" : cw voltage meausurement
+        "b" : battery pack voltage
     }
 """
-
-SEND_DATA = False
 
 class task(Task):
     priority = 10 
     # TEST FREQ = 1/120 
-    # TODO: Change to FLIGHT FREQ = 1/(60*60)
+    # TODO: Change to FLIGHT FREQ = 1/(60*40)
     frequency = 1/120
     name = "cosmic watch"
     color = "gray"
@@ -51,25 +50,27 @@ class task(Task):
                 startTime = time.time()
                 while (time.time() - startTime) < 60:
                     readings = {
-                        "time": time.time(),
-                        "voltage": self.sensor.light
+                        "t": time.time(),
+                        "s": self.sensor.light,
+                        "b": self.cubesat.battery_voltage,
                     }
                     print(f"Measured {self.sensor.light} at time {time.time()}")
+                    print(f"Battery pack voltage: {self.cubesat.battery_voltage}")
                     msgpack.pack(readings, f)
-                    time.sleep(0.5)
+                    time.sleep(1)
 
             # Check if the file is getting bigger than we'd like
             if stat(self.data_file)[6] >= 256: # Bytes
                 print("File reached 256 bytes... Sending")
-                if SEND_DATA:
+                if self.cubesat.antenna_attached:
                     print(f"\nSend CW data file: {self.data_file}")
                     with open(self.data_file, "rb") as f:
-                        chunk = f.read(64) # Each reading is 64 bytes when encoded
+                        chunk = f.read(32) # Each reading is 32 bytes when encoded
                         while chunk:
                             # We could send bigger chunks, radio packet can take 252 bytes
-                            self.cubesat.radio1.send(f"[KE8VDK]{chunk}[KE8VDK]\0")
+                            self.cubesat.radio1.send(f"KE8VDK{chunk}\0")
                             print(chunk)
-                            chunk = f.read(64)
+                            chunk = f.read(32)
                     print("Finished\n")
                 else:
                     # Print the unpacked data from the file

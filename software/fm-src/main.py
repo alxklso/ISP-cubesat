@@ -100,7 +100,7 @@ else:
         start_time = time.time()
         while (time.time() < start_time+(60*60)):
             print("Sending identifier beacon...")
-            cubesat.radio1.send("[KE8VDK]CoyoteSat boot up successful![KE8VDK]\0")
+            cubesat.radio1.send("KE8VDKCoyoteSat boot up successful!\0")
             time.sleep(60)
 
     # Schedule tasks

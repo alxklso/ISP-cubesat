@@ -1,20 +1,19 @@
+"""
+IARU assigned frequency = 437.40 MHz --> TODO: Set in pycubed.py
+"""
 import cdh
 from Tasks.template_task import Task
 
-# IARU ASSIGNED FREQUENCY = 437.40
-# Freq parameter set in pycubed.py
-
 class task(Task):
     priority = 1
-    frequency = 1/30 # once every 30s
+    frequency = 1/300 # once every 5 mins, for listening for cmds TODO: 
     name = "beacon"
     color = "teal"
 
     schedule_later = True
 
-    # our 4 byte code to authorize commands
-    # pass-code for DEMO PURPOSES ONLY
-    super_secret_code = b"p\xba\xb8C"
+    # 4-byte password for commands
+    super_secret_code = b"p\xba\xb8A"
 
     cmd_dispatch = {
         "no-op":        cdh.noop,
@@ -32,20 +31,20 @@ class task(Task):
 
     async def main_task(self):
         """
-        If you've attached a 433MHz antenna,
-        set the ANTENNA_ATTACHED variable to True in main.py
+        TODO: If you've attached an antenna,
+        set the cubesat.antenna_attached variable to True in main.py
         to actually send the beacon packet
         """
         if self.cubesat.antenna_attached:
             self.debug("Sending beacon")
-            self.cubesat.radio1.send("[KE8VDK]Hello World![KE8VDK]\0", destination = 0xFF, keep_listening = True)
+            self.cubesat.radio1.send("KE8VDKHello World!\0", destination = 0xFF, keep_listening = True)
         else:
             # Fake beacon since we don't know if an antenna is attached
-            print() # blank line
+            print()
             self.debug("[WARNING]")
             self.debug("NOT sending beacon (unknown antenna state)", 2)
             self.debug("If you've attached an antenna, edit '/Tasks/beacon_task.py' to actually beacon", 2)
-            print() # blank line
+            print()
             self.cubesat.radio1.listen()
 
         self.debug("Listening 10s for response (non-blocking)")

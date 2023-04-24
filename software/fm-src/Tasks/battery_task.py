@@ -8,10 +8,9 @@ to check for low batteries.
 
 class task(Task):
     priority = 3
-    frequency = 1/10 # once every 10s
+    frequency = 1/60 # once every 60s
     name = "vbatt"
     color = "orange"
-
     timeout = 60*60 # 60 min
 
     async def main_task(self):
@@ -19,7 +18,7 @@ class task(Task):
         vbatt = self.cubesat.battery_voltage
         comp_var = ""
 
-        # vlowbatt = 6.0V in pycubed.py
+        # vlowbatt = 6.5V in pycubed.py
         if vbatt > self.cubesat.vlowbatt:
             comp_var = ">"
         else:

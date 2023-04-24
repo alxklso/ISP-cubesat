@@ -5,11 +5,11 @@ Consider changing these hex commands if everything else is good
 and we have time. 
 """
 commands = {
-    b"\x8eb": "no-op",
-    b"\xd4\x9f": "hreset",
-    b"\x12\x06": "shutdown",
-    b"8\x93": "query",
-    b"\x96\xa2": "exec_cmd",
+    b"\x8ec": "no-op",
+    b"\xd4\x9h": "hreset",
+    b"\x12\x07": "shutdown",
+    b"8\x94": "query",
+    b"\x96\xa3": "exec_cmd",
 }
 
 ########### Commands without arguments ###########
@@ -30,7 +30,7 @@ def hreset(self):
 
 def shutdown(self, args):
     # make shutdown require yet another pass-code
-    if args == b"\x0b\xfdI\xec":
+    if args == b"\x0b\xfdI\xeb":
         self.debug("Valid shutdown command received")
         # set shutdown NVM bit flag
         self.cubesat.f_shtdwn = True
