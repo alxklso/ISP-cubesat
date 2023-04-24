@@ -24,7 +24,7 @@ SEND_DATA = False
 class task(Task):
     priority = 10 
     # TEST FREQ = 1/120 
-    # TODO: Change to FREQ = 1/(60*60)
+    # TODO: Change to FLIGHT FREQ = 1/(60*60)
     frequency = 1/120
     name = "cosmic watch"
     color = "gray"
@@ -37,13 +37,15 @@ class task(Task):
     def __init__(self, satellite):
         super().__init__(satellite)
         self.sensor = adafruit_veml7700.VEML7700(self.cubesat.i2c2)
-        self.data_file = self.cubesat.new_file("/sd/cw", binary = True)
+        self.data_file = self.cubesat.new_file("/cw", binary = True)
 
     async def main_task(self):
 
         if self.data_file is not None:
             # Create start time using UNIX epoch time 
             # Used for file naming and to check when the task is finished
+            # TODO: Change code from veml7700 to code from CW's ADC library 
+            # https://github.com/adafruit/Adafruit_CircuitPython_ADS1x15
             print("Starting measurements")
             with open(self.data_file, "ab") as f:
                 startTime = time.time()
@@ -78,4 +80,4 @@ class task(Task):
                             except: break
                     print("Finished\n")
 
-                self.data_file = self.cubesat.new_file("/sd/cw")
+                self.data_file = self.cubesat.new_file("/cw")
