@@ -69,7 +69,7 @@ class task(Task):
                         chunk = f.read(64) # Each reading is 64 bytes when encoded
                         while chunk:
                             # We could send bigger chunks, radio packet can take 252 bytes
-                            self.cubesat.radio1.send(chunk)
+                            self.cubesat.radio1.send(f"[KE8VDK]{chunk}[KE8VDK]\0")
                             print(chunk)
                             chunk = f.read(64)
                     print("Finished\n")

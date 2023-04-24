@@ -38,7 +38,7 @@ class task(Task):
         """
         if self.cubesat.antenna_attached:
             self.debug("Sending beacon")
-            self.cubesat.radio1.send("Hello World!", destination = 0xFF, keep_listening = True)
+            self.cubesat.radio1.send("[KE8VDK]Hello World![KE8VDK]\0", destination = 0xFF, keep_listening = True)
         else:
             # Fake beacon since we don't know if an antenna is attached
             print() # blank line

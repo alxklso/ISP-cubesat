@@ -93,10 +93,12 @@ else:
 
     # If booting up for first or second time, send identifier beacon
     # Include couple boots for accidental measure
+    # TODO: Fix this identifier beacon portion, boot count would need to be fixed
     if cubesat.c_boot < 3: 
         start_time = time.time()
         while (time.time() < start_time+(60*60)):
-            cubesat.radio1.send("[KE8VDK]CoyoteSat boot up successful![KE8VDK]")
+            print("Sending identifier beacon...")
+            cubesat.radio1.send("[KE8VDK]CoyoteSat boot up successful![KE8VDK]\0")
             time.sleep(60)
 
     # Schedule tasks
