@@ -1,13 +1,11 @@
-import time
-from Tasks.template_task import Task
-import msgpack
+import time, msgpack, adafruit_veml7700
 from os import stat
-import adafruit_veml7700
+from Tasks.template_task import Task
 
 """
 FOR BENCHTOP TESTING: Every 2 minutes, this task turns on the Cosmic Watch
 for 1 minute, takes measurements, and records data in a new plain txt file
-on the SD card. PyCubed interfaces with CW via payload bus pins.
+on the SD card. PyCubed interfaces with CW via payload bus using I2C.
 
 IN SPACE: Every 60 minutes, Cosmic Watch turns on for 1 minute, takes measurements, 
 and records data into a new plain txt file with name and unix time stamp. The data
@@ -24,19 +22,17 @@ Data measurement scheme:
 SEND_DATA = False
 
 class task(Task):
-    priority = 10 # Set to low priority for now
-    # TEST FREQ = 2 MINUTES (FREQ = 1/120)
-    # FLIGHT FREQ = 10 MINUTES (FREQ = 1/600)
+    priority = 10 
+    # TEST FREQ = 1/120 
+    # TODO: Change to FREQ = 1/(60*60)
     frequency = 1/120
     name = "cosmic watch"
     color = "gray"
     data_file = None
     sensor = None
-
-    # Set to True to skip first cycle of task
     schedule_later = False
 
-    # We want to initialize the data file only once upon boot
+    # Initialize data file only once upon boot
     # So perform our task init and use that as a chance to init the data files
     def __init__(self, satellite):
         super().__init__(satellite)

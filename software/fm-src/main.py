@@ -6,6 +6,8 @@ from lib.pycubed import cubesat
 """
 FSW MAIN: Creates a queue of scheduled tasks that runs forever. Includes
 a first-time startup burn-wire section, as well as batt pack voltage check.
+After first-time burn-wire activation, main is entered repeatedly forever.
+Includes board hard-reset if all other fault-handling measures fail.
 """
 
 ############# CONFIGURATION START ############# 
@@ -57,13 +59,13 @@ def hardReset():
 
 
 
-############# MAIN PORTION START #############
-
 if not cubesat.benchtop_testing:
-    time.sleep(180) # Delay after pod deployment
+    time.sleep(180) # 3 min delay after pod deployment
 
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
+    # This section of the code is only ever entered once. Once antennas 
+    # are deployed, main is run perpetually.
     if cubesat.battery_voltage >= 7.8:
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
@@ -117,7 +119,7 @@ else:
             continue
 
         # Import task file
-        exec(f"Import Tasks.{file}")
+        exec(f"import Tasks.{file}")
         task_obj = eval("Tasks." + file).task(cubesat)
 
         # Tasks scheduled for later 
@@ -128,8 +130,8 @@ else:
 
         cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 
-    # Show all scheduled tasks
-    showScheduledTasks()
+    if cubesat.benchtop_testing:
+        showScheduledTasks()
 
     # Driver code, runs forever
     print("\nRunning...")
@@ -141,13 +143,11 @@ else:
         formatted_exception = traceback.format_exception(e, e, e.__traceback__)
         print(formatted_exception)
         try:
-            # Increment NVM error counter
+            # Increment NVM error counter and log error in log.txt on SD card
             cubesat.c_state_err+=1
-            # Try logging the error in log.txt on the SD card
             cubesat.log(f"{formatted_exception},{cubesat.c_state_err},{cubesat.c_boot}")
         except:
             pass
 
-# we shouldn't be here!
 # Hard reset if all other fault-handling measures fail
 hardReset()
