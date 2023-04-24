@@ -90,8 +90,15 @@ if not cubesat.f_burnedAlready:
         alarm.exit_and_deep_sleep_until_alarms(sleep_alarm)
 else:
     print("Startup routine successful! Starting main portion...")
-    cubesat.radio1.send("Startup routine successful!")
-    
+
+    # If booting up for first or second time, send identifier beacon
+    # Include couple boots for accidental measure
+    if cubesat.c_boot < 3: 
+        start_time = time.time()
+        while (time.time() < start_time+(60*60)):
+            cubesat.radio1.send("[KE8VDK]CoyoteSat boot up successful![KE8VDK]")
+            time.sleep(60)
+
     # Schedule tasks
     cubesat.tasko = tasko
     cubesat.scheduled_tasks={}
