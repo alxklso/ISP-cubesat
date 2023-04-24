@@ -90,7 +90,8 @@ if not cubesat.f_burnedAlready:
         alarm.exit_and_deep_sleep_until_alarms(sleep_alarm)
 else:
     print("Startup routine successful! Starting main portion...")
-
+    cubesat.radio1.send("Startup routine successful!")
+    
     # Schedule tasks
     cubesat.tasko = tasko
     cubesat.scheduled_tasks={}
