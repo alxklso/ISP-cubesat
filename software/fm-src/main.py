@@ -72,10 +72,10 @@ if not cubesat.f_burnedAlready:
             cubesat.f_burnedAlready = True  # Set bit flag
             print(f"Post-burn NVM bit status: {cubesat.f_burnedAlready}")
             time.sleep(3)
+            cubesat.f_lowbatt = False
+            cubesat.powermode("norm")
         except Exception as e:
             print(e)
-        cubesat.f_lowbatt = False
-        cubesat.powermode("norm")
     # If batteries are not sufficiently charged, enter lower power mode to charge the batteries 
     # Charge until batteries are fully charged
     else:
