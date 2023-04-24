@@ -65,8 +65,6 @@ if not cubesat.benchtop_testing:
 if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     if cubesat.battery_voltage >= 7.8:
-        cubesat.f_lowbatt = False
-        cubesat.powermode("norm")
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
             if cubesat.burn_enabled:
@@ -76,6 +74,8 @@ if not cubesat.f_burnedAlready:
             time.sleep(3)
         except Exception as e:
             print(e)
+        cubesat.f_lowbatt = False
+        cubesat.powermode("norm")
     # If batteries are not sufficiently charged, enter lower power mode to charge the batteries 
     # Charge until batteries are fully charged
     else:
