@@ -114,7 +114,10 @@ else:
         # Ignore these files
         disabled_tasks = ["template_task", "listen_task"]
         if not cubesat.i2c_payload or not cubesat.antenna_attached:
-            disabled_tasks.append("cw_task")
+            if cubesat.i2c_payload:
+                disabled_tasks.append("cw_task")
+            if cubesat.antenna_attached:
+                disabled_tasks.append("beacon_task")
         if file in disabled_tasks or file.startswith('._'):
             continue
 
