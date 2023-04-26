@@ -85,8 +85,8 @@ class task(Task):
                                     self.cubesat.radio1.send(b"invalid cmd" + response[4:])
             else:
                 self.debug("no messages")
-            self.cubesat.radio1.sleep()
-            self.debug("finished")
+                self.cubesat.radio1.sleep()
+                self.debug("finished")
         else:
             # Fake beacon since we don't know if an antenna is attached
             print()
