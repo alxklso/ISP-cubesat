@@ -96,7 +96,7 @@ else:
     # If booting up for first or second time, send identifier beacon
     # Include couple boots for accidental measure
     # TODO: Fix this identifier beacon portion, boot count would need to be fixed
-    if cubesat.c_boot < 3: 
+    if cubesat.c_boot < 3 and cubesat.antenna_attached: 
         start_time = time.time()
         while (time.time() < start_time+(60*60)):
             print("Sending identifier beacon...")
@@ -113,7 +113,7 @@ else:
 
         # Ignore these files
         disabled_tasks = ["template_task", "listen_task"]
-        if not cubesat.i2c_payload:
+        if not cubesat.i2c_payload or not cubesat.antenna_attached:
             disabled_tasks.append("cw_task")
         if file in disabled_tasks or file.startswith('._'):
             continue
