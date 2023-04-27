@@ -1,7 +1,7 @@
 **/.DS_Store
 .DS_Store
 **/__pycache__
-
+**/.vscode/
 
 **/.kicad_prl
 **/fp-info-cache
