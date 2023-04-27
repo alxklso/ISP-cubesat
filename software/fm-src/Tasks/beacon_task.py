@@ -1,19 +1,17 @@
-"""
-IARU assigned frequency = 437.40 MHz --> TODO: Set in pycubed.py
-"""
 import cdh
 from Tasks.template_task import Task
 
 class task(Task):
     priority = 1
-    frequency = 1/300 # once every 5 mins, for listening for cmds TODO: 
+    testing_frequency = 1/30 # once every 5 mins, for listening for cmds
+    frequency = 1/(60*40) # once every 40 mins, for listening for cmds
     name = "beacon"
     color = "teal"
 
     schedule_later = True
 
     # 4-byte password for commands
-    super_secret_code = b"p\xba\xb8A"
+    super_secret_code = b"p\xba\xb8A" # TODO: CHANGE CODE
 
     cmd_dispatch = {
         "no-op":        cdh.noop,

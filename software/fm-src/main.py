@@ -10,24 +10,9 @@ After first-time burn-wire activation, main is entered repeatedly forever.
 Includes board hard-reset if all other fault-handling measures fail.
 """
 
-############# CONFIGURATION START ############# 
-
 """
-IMPORTANT: Make sure to set the configuration below to the following before launch
-cubesat.antenna_attached = True
-cubesat.benchtop_testing = False
-cubesat.burn_enabled = True
-cubesat.i2c_payload = True
+IMPORTANT: Make sure to set configuration in pycubed.py!
 """
-
-cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
-cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
-cubesat.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
-cubesat.i2c_payload = False # IMPORTANT: Set to true when you attach CW payload
-
-############# CONFIGURATION END ############# 
-
-
 
 ############# HELPER FUNCTIONS START ############# 
 
@@ -66,6 +51,11 @@ if not cubesat.f_burnedAlready:
     # Batt pack voltage needs to be >= 7.8V for first time startup
     # This section of the code is only ever entered once. Once antennas 
     # are deployed, main is run perpetually.
+
+    if cubesat.c_boot > 3 and not cubesat.benchtop_testing:
+        # If we can't burn the wire, then let's just move on to beaconing
+        cubesat.f_burnedAlready = True
+    
     if cubesat.battery_voltage >= 7.8:
         try:
             print(f"Pre-burn NVM bit status: {cubesat.f_burnedAlready}")
@@ -96,7 +86,7 @@ else:
     # If booting up for first or second time, send identifier beacon
     # Include couple boots for accidental measure
     # TODO: Fix this identifier beacon portion, boot count would need to be fixed
-    if cubesat.c_boot < 3 and cubesat.antenna_attached: 
+    if cubesat.c_boot < 5 and cubesat.antenna_attached: 
         start_time = time.time()
         while (time.time() < start_time+(60*60)):
             print("Sending identifier beacon...")
@@ -113,11 +103,13 @@ else:
 
         # Ignore these files
         disabled_tasks = ["template_task", "listen_task"]
+
         if not cubesat.i2c_payload or not cubesat.antenna_attached:
-            if cubesat.i2c_payload:
-                disabled_tasks.append("cw_task")
-            if cubesat.antenna_attached:
-                disabled_tasks.append("beacon_task")
+            disabled_tasks.append("cw_task")
+        
+        if not cubesat.antenna_attached:
+            disabled_tasks.append("beacon_task")
+        
         if file in disabled_tasks or file.startswith('._'):
             continue
 
@@ -130,6 +122,12 @@ else:
             schedule = cubesat.tasko.schedule_later
         else:
             schedule = cubesat.tasko.schedule
+
+        main_task = task_obj.main_task
+        task_priority = task_obj.priority
+        task_frequency = task_obj.frequency
+        if cubesat.benchtop_testing:
+            task_frequency = task_obj.frequency
 
         cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
 

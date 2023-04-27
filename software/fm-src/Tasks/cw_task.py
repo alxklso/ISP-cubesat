@@ -1,6 +1,8 @@
-import time, msgpack, adafruit_veml7700
+import time, msgpack
 from os import stat
 from Tasks.template_task import Task
+import adafruit_ads1x15.ads1115 as ADS #ADC import
+from adafruit_ads1x15.analog_in import AnalogIn #ADC collects data from voltage src at pin 0
 
 """
 FOR BENCHTOP TESTING: Every 2 minutes, this task turns on the Cosmic Watch
@@ -16,15 +18,15 @@ Data measurement scheme:
     measurement = {
         "t" : unix epoch time,
         "s" : cw voltage meausurement
+        "v" : cw value measumrenet
         "b" : battery pack voltage
     }
 """
 
 class task(Task):
     priority = 10 
-    # TEST FREQ = 1/120 
-    # TODO: Change to FLIGHT FREQ = 1/(60*40)
-    frequency = 1/120
+    frequency = 1/(60*40)
+    testing_frequency = 1/120
     name = "cosmic watch"
     color = "gray"
     data_file = None
@@ -35,7 +37,8 @@ class task(Task):
     # So perform our task init and use that as a chance to init the data files
     def __init__(self, satellite):
         super().__init__(satellite)
-        self.sensor = adafruit_veml7700.VEML7700(self.cubesat.i2c2)
+        self.ads= ADS.ADS1115(self.cubesat.i2c2)
+        self.chan = AnalogIn(self.ads, ADS.P0)
         self.data_file = self.cubesat.new_file("/cw", binary = True)
 
     async def main_task(self):
@@ -49,13 +52,13 @@ class task(Task):
             with open(self.data_file, "ab") as f:
                 startTime = time.time()
                 while (time.time() - startTime) < 60:
+                    #time with corresponding voltage
                     readings = {
-                        "t": time.time(),
-                        "s": self.sensor.light,
-                        "b": self.cubesat.battery_voltage,
+                        "time": time.monotonic(),
+                        "voltage": self.chan.voltage
                     }
-                    print(f"Measured {self.sensor.light} at time {time.time()}")
-                    print(f"Battery pack voltage: {self.cubesat.battery_voltage}")
+                    #prints measured voltage of AnalogIn channel connected to ADS1115 at current time
+                    print(f"Measured {self.chan.voltage} at time {time.time()}")
                     msgpack.pack(readings, f)
                     time.sleep(1)
 

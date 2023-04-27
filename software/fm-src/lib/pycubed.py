@@ -52,14 +52,23 @@ class Satellite:
         """
         Big init routine as the whole board is brought up.
         """
-        # Define whether cubesat is in benchtop testing mode or not
-        self.benchtop_testing = False
-        # Define if antenna is attached or not
-        self.antenna_attached = False
-        # Define if burn is enabled
-        self.burn_enabled = False
-        # Define if payload is enabled
-        self.i2c_payload = False
+
+        ############# CONFIGURATION START ############# 
+
+        """
+        TODO: Make sure to set the configuration below to the following before launch
+        cubesat.antenna_attached = True
+        cubesat.benchtop_testing = False
+        cubesat.burn_enabled = True
+        cubesat.i2c_payload = True
+        """
+
+        cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
+        cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
+        cubesat.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
+        cubesat.i2c_payload = False # IMPORTANT: Set to true when you attach CW payload
+
+        ############# CONFIGURATION END ############# 
 
         self.BOOTTIME = const(time.time())
         self.data_cache = {}
@@ -95,7 +104,6 @@ class Satellite:
         self.spi = board.SPI()
         self.uart = busio.UART(board.TX, board.RX)
 
-        # TODO: Check i2c2 payload after Aneri's CW code is integrated
         if self.i2c_payload:
             self.i2c2 = busio.I2C(board.SCL2, board.SDA2)
 
@@ -157,6 +165,9 @@ class Satellite:
         # Initialize radio #1 - UHF
         # IARU assigned frequency = 437.40 MHz
         try:
+            """
+            IARU assigned frequency = 437.40 MHz --> TODO: Make sure frequency is set here
+            """
             self.radio1 = pycubed_rfm9x.RFM9x(self.spi, _rf_cs1, _rf_rst1,
                 437.40, code_rate = 8, baudrate = 1320000)
             # Default LoRa Modulation Settings

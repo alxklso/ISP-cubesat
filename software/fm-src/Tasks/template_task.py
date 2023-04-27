@@ -7,12 +7,14 @@ class Task:
     Attributes:
         priority:    The priority level assigned to the task.
         frequency:   Number of times the task must be executed in 1 second (Hz).
+        testing_frequency:   Number of times the task must be executed in 1 second (Hz) during benchtop testing.
         name:        Name of the task object for future reference
         color:       Debug color for serial terminal
     """
 
     priority = 10
     frequency = 1
+    testing_frequency = 1
     name = "temp"
     color = "gray"
 
