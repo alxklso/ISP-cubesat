@@ -43,7 +43,6 @@ class task(Task):
 
                 self.cubesat.powermode("minimum")
                 while time.monotonic() < _timer:
-                    # sleep for half our remaining time
                     _sleeptime = self.timeout/10
                     self.debug(f"Sleeping for {_sleeptime} s", 2)
                     time.sleep(_sleeptime)
