@@ -83,12 +83,11 @@ if not cubesat.f_burnedAlready:
 else:
     print("Startup routine successful! Starting main portion...")
 
-    # If booting up for first or second time, send identifier beacon
-    # Include couple boots for accidental measure
-    # TODO: Fix this identifier beacon portion, boot count would need to be fixed
-    if cubesat.c_boot < 5 and cubesat.antenna_attached: 
-        start_time = time.time()
-        while (time.time() < start_time+(60*60)):
+
+    if cubesat.antenna_attached: 
+        start_time = time.monotonic()
+        end_time = start_time + (60*40)
+        while (time.monotonic() < start_time + (60*5)):
             print("Sending identifier beacon...")
             cubesat.radio_send("CoyoteSat boot up successful!")
             time.sleep(60)
