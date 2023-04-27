@@ -35,7 +35,7 @@ class task(Task):
         """
         if self.cubesat.antenna_attached:
             self.debug("Sending beacon")
-            self.cubesat.radio1.send("KE8VDKHello World!\0", destination = 0xFF, keep_listening = True)
+            self.cubesat.radio_send("Hello World!", destination = 0xFF, keep_listening = True)
 
             self.debug("Listening 10s for response (non-blocking)")
             heard_something = await self.cubesat.radio1.await_rx(timeout = 10)
@@ -77,10 +77,10 @@ class task(Task):
                                             self.cmd_dispatch[cdh.commands[cmd]](self, cmd_args)
                                     except Exception as e:
                                         self.debug(f"something went wrong: {e}")
-                                        self.cubesat.radio1.send(str(e).encode())
+                                        self.cubesat.radio_send(str(e).encode())
                                 else:
                                     self.debug("invalid command!")
-                                    self.cubesat.radio1.send(b"invalid cmd" + response[4:])
+                                    self.cubesat.radio_send(b"invalid cmd" + response[4:])
             else:
                 self.debug("no messages")
                 self.cubesat.radio1.sleep()

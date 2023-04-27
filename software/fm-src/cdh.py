@@ -20,7 +20,7 @@ def noop(self):
 def hreset(self):
     self.debug("Resetting")
     try:
-        self.cubesat.radio1.send(data = b"resetting")
+        self.cubesat.radio_send(b"resetting")
         self.cubesat.micro.on_next_reset(self.cubesat.micro.RunMode.NORMAL)
         self.cubesat.micro.reset()
     except:
@@ -44,7 +44,7 @@ def shutdown(self, args):
 
 def query(self,args):
     self.debug(f"query: {args}")
-    self.cubesat.radio1.send(data = str(eval(args)))
+    self.cubesat.radio_send(str(eval(args)))
 
 def exec_cmd(self,args):
     self.debug(f"exec: {args}")

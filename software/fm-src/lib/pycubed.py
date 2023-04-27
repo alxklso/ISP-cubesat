@@ -421,5 +421,8 @@ class Satellite:
         burnwire.deinit()
         self._relayA.drive_mode = digitalio.DriveMode.OPEN_DRAIN
         return True
+    
+    def radio_send(self, data, destination = None, keep_listening = False):
+        self.radio1.send(data=f"KE8VDK{data}\0", destination=destination, keep_listening=keep_listening)
 
 cubesat = Satellite()

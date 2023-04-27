@@ -54,11 +54,12 @@ class task(Task):
                 while (time.time() - startTime) < 60:
                     #time with corresponding voltage
                     readings = {
-                        "time": time.monotonic(),
-                        "voltage": self.chan.voltage
+                        "t": time.monotonic(),
+                        "vlt": self.chan.voltage,
+                        "val": self.chan.value
                     }
                     #prints measured voltage of AnalogIn channel connected to ADS1115 at current time
-                    print(f"Measured {self.chan.voltage} at time {time.time()}")
+                    print(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
                     msgpack.pack(readings, f)
                     time.sleep(1)
 
@@ -71,7 +72,7 @@ class task(Task):
                         chunk = f.read(32) # Each reading is 32 bytes when encoded
                         while chunk:
                             # We could send bigger chunks, radio packet can take 252 bytes
-                            self.cubesat.radio1.send(f"KE8VDK{chunk}\0")
+                            self.cubesat.radio_send(chunk)
                             print(chunk)
                             chunk = f.read(32)
                     print("Finished\n")
