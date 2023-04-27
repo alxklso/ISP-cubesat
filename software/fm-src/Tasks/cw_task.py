@@ -1,5 +1,5 @@
 import time, msgpack
-from os import stat
+import os
 from Tasks.template_task import Task
 import adafruit_ads1x15.ads1115 as ADS #ADC import
 from adafruit_ads1x15.analog_in import AnalogIn #ADC collects data from voltage src at pin 0
@@ -38,10 +38,11 @@ class task(Task):
         super().__init__(satellite)
         self.ads= ADS.ADS1115(self.cubesat.i2c2)
         self.chan = AnalogIn(self.ads, ADS.P0)
+        self.check_and_delete_files()
         self.data_file = self.cubesat.new_file("/cw", binary = True)
 
     async def main_task(self):
-
+        self.check_and_delete_files()
         if self.data_file is not None:
             # Create start time using UNIX epoch time 
             # Used for file naming and to check when the task is finished
@@ -85,3 +86,25 @@ class task(Task):
                     print("Finished\n")
 
                 self.data_file = self.cubesat.new_file("/cw")
+
+    def check_and_delete_files(self):
+        #file deletion logic
+        #how much space is remaining:
+        fs_stats = os.statvfs('/sd')
+        available_space = fs_stats.f_bavail * fs_stats.f_frsize
+        print(f"Remaining space is {available_space}")
+        
+        #if less than 1 MB of space remaining, delete the files one by one until there is enough space left
+        if available_space <= 1000000:
+            print("Deleting files from SD card...")
+            #sort files, oldest to newest
+            files = [f for f in os.listdir("/sd/cw") if os.path.isfile(os.path.join("/sd/cw", f))]
+            files.sort(key=lambda x: os.path.getmtime(os.path.join("/sd/cw", x)))
+
+            #delete files until we have enough space
+            while available_space < 1000000:
+                file_to_delete = files.pop(0)
+                os.remove(os.path.join("/sd/cw", file_to_delete))
+                dir_size -= os.path.getsize(os.path.join("/sd/cw", file_to_delete))
+                print(f"Deleted file {file_to_delete}")
+                print(f"Space remaining after deletion: {available_space}")
