@@ -17,9 +17,8 @@ Data measurement scheme:
 
     measurement = {
         "t" : unix epoch time,
-        "s" : cw voltage meausurement
-        "v" : cw value measumrenet
-        "b" : battery pack voltage
+        "vlt" : cw voltage meausurement
+        "val" : cw value measurement
     }
 """
 
