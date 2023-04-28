@@ -85,7 +85,7 @@ class task(Task):
                 files = [f"{directory}/{f}" for f in os.listdir(directory)]
                 files.sort()
         except:
-            pass
+            self.debug("Could not get sorted files")
         return files
     
     def delete_extra_files(self, file_list):
@@ -95,9 +95,10 @@ class task(Task):
             if self.cubesat.hardware["SDcard"]:
                 while len(file_list) >= 100:
                     file_to_delete = file_list.pop(0)
+                    self.debug(f"Deleting: {file_to_delete}")
                     os.remove(file_to_delete)
         except:
-            pass
+            self.debug("Could not delete extra files")
         return file_list
 
     def check_and_delete_files(self):
