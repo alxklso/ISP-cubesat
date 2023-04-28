@@ -123,7 +123,13 @@ class task(Task):
                         print(chunk)
                         chunk = f.read(32)
                 # Move to read directory when we have sent it
-                os.rename(file, file.replace("cw", "cw_read"))
+                try:
+                    os.rename(file, file.replace("cw", "cw_read"))
+                except OSError:
+                    try:
+                        os.mkdir("/sd/cw_read")
+                    except:
+                        break
                 # If we time out let's stop reading
                 if time.monotonic() > end_time:
                     break
