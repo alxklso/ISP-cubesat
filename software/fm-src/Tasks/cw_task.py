@@ -78,21 +78,30 @@ class task(Task):
                 self.data_file = self.cubesat.new_file(self.cw_path)
 
     def get_sorted_files(self, directory):
-        files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
-        files.sort()
-        return files
+        try:
+            files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+            files.sort()
+            return files
+        except:
+            return []
     
     def delete_extra_files(self, file_list, deletion_dir):
         # We only store up to 512 files 
-        while len(file_list) >= 512:
-            file_to_delete = file_list.pop(0)
-            os.remove(os.path.join(deletion_dir, file_to_delete))
+        try:
+            while len(file_list) >= 512:
+                file_to_delete = file_list.pop(0)
+                os.remove(os.path.join(deletion_dir, file_to_delete))
+        except:
+            pass
         return file_list
     
     def delete_file(self, files, directory):
-        file_to_delete = files.pop(0)
-        os.remove(os.path.join(directory, file_to_delete))
-        dir_size -= os.path.getsize(os.path.join(directory, file_to_delete))
+        try:
+            file_to_delete = files.pop(0)
+            os.remove(os.path.join(directory, file_to_delete))
+            dir_size -= os.path.getsize(os.path.join(directory, file_to_delete))
+        except:
+            pass
         return files
 
     def check_and_delete_files(self):
@@ -104,8 +113,8 @@ class task(Task):
         files = self.get_sorted_files(cw_dir)
 
         # Make sure each dir doesn't have too many files
-        read_files = self.delete_extra_files(read_files)
-        files = self.delete_extra_files(files)
+        read_files = self.delete_extra_files(read_files, cw_read_dir)
+        files = self.delete_extra_files(files, cw_dir)
         
         # File deletion logic
         # How much space is remaining:
