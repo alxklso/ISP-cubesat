@@ -67,10 +67,10 @@ class Satellite:
         cubesat.i2c_payload = True
         """
 
-        cubesat.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
-        cubesat.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
-        cubesat.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
-        cubesat.i2c_payload = False # IMPORTANT: Set to true when you attach CW payload
+        self.antenna_attached = False # IMPORTANT: Only set to true if antenna is attached
+        self.benchtop_testing = True # IMPORTANT: Set to False when dropping off for flight
+        self.burn_enabled = False # IMPORTANT: Only set to true if burn wire is attached
+        self.i2c_payload = False # IMPORTANT: Set to true when you attach CW payload
 
         ############# CONFIGURATION END ############# 
 
