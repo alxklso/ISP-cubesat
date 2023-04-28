@@ -73,7 +73,7 @@ class task(Task):
             if stat(self.data_file)[6] >= 128: # Bytes
                 with open(self.data_file, "rb") as f:
                     while True:
-                        try: self.debug("\t", msgpack.unpack(f))
+                        try: print("\t", msgpack.unpack(f))
                         except: break
 
                 self.data_file = self.cubesat.new_file("/cw/cw")
