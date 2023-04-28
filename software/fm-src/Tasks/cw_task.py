@@ -50,7 +50,7 @@ class task(Task):
             # Used for file naming and to check when the task is finished
             # TODO: Change code from veml7700 to code from CW's ADC library 
             # https://github.com/adafruit/Adafruit_CircuitPython_ADS1x15
-            print("Starting measurements")
+            self.debug("Starting measurements")
             
             with open(self.data_file, "ab") as f:
                 startTime = time.time()
@@ -65,7 +65,7 @@ class task(Task):
                         "val": self.chan.value
                     }
                     #prints measured voltage of AnalogIn channel connected to ADS1115 at current time
-                    print(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
+                    self.debug(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
                     msgpack.pack(readings, f)
                     time.sleep(1)
 
@@ -73,7 +73,7 @@ class task(Task):
             if stat(self.data_file)[6] >= 128: # Bytes
                 with open(self.data_file, "rb") as f:
                     while True:
-                        try: print("\t", msgpack.unpack(f))
+                        try: self.debug("\t", msgpack.unpack(f))
                         except: break
 
                 self.data_file = self.cubesat.new_file("/cw/cw")

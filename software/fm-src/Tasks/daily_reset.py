@@ -17,7 +17,7 @@ class task(Task):
 
     async def main_task(self):
         # If all other fault-handling fails, hard reset the PyCubed
-        print("Resetting to clamp monotonic drift")
+        self.debug("Resetting to clamp monotonic drift")
         time.sleep(10)
         self.cubesat.micro.on_next_reset(self.cubesat.micro.RunMode.NORMAL)
         self.cubesat.micro.reset()
