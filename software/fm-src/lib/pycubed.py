@@ -23,6 +23,7 @@ from micropython import const
 
 # NVM register numbers
 _BOOTCNT  = const(0)
+_BURNCNT  = const(1)
 _VBUSRST  = const(6)
 _STATECNT = const(7)
 _TOUTS    = const(9)
@@ -39,6 +40,9 @@ class Satellite:
     c_state_err = multiBitFlag(register = _STATECNT, lowest_bit = 0, num_bits = 8)
     c_gs_resp   = multiBitFlag(register = _GSRSP,    lowest_bit = 0, num_bits = 8)
     c_ichrg     = multiBitFlag(register = _ICHRG,    lowest_bit = 0, num_bits = 8)
+    
+    # Check for burn wire attempts
+    c_burn     = multiBitFlag(register = _BURNCNT, lowest_bit = 0, num_bits = 8)
 
     # Define NVM flags
     f_lowbatt       = bitFlag(register = _FLAG, bit = 0)
