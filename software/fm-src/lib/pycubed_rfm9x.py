@@ -1,8 +1,6 @@
-import time
-from random import random
-import digitalio
-from micropython import const
-import adafruit_bus_device.spi_device as spidev
+# SPDX-FileCopyrightText: 2017 Tony DiCola for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
 
 """
 MODIFIED VERSION of adafruit_rfm9x CircuitPython Library for PyCubed Use
@@ -12,7 +10,11 @@ CircuitPython Version: 7.0.0 alpha
 Library Repo: https://github.com/pycubed/library_pycubed.py
 * Edits by: Max Holliday
 """
-
+import time
+from random import random
+import digitalio
+from micropython import const
+import adafruit_bus_device.spi_device as spidev
 
 # pylint: disable=bad-whitespace
 # Internal constants:
@@ -289,7 +291,7 @@ class RFM9x:
         # Defaults set modem config to RadioHead compatible Bw125Cr45Sf128 mode.
         self.signal_bandwidth = 125000
         self.coding_rate = code_rate
-        self.spreading_factor = 9
+        self.spreading_factor = 7
         # Default to disable CRC checking on incoming packets.
         self.enable_crc = False
         # Note no sync word is set for LoRa mode either!
