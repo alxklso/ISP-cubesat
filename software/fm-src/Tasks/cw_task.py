@@ -34,8 +34,6 @@ class task(Task):
     sensor = None
     schedule_later = False
 
-    cw_path = "/cw"
-
     # Initialize data file only once upon boot
     # So perform our task init and use that as a chance to init the data files
     def __init__(self, satellite):
@@ -108,13 +106,14 @@ class task(Task):
         return files
 
     def check_and_delete_files(self):
-        cw_dir = f"/sd/{self.cw_path}"
-        cw_read_dir = f"/sd/{self.cw_path}_read"
+        cw_dir = f"/sd/cw"
+        cw_read_dir = f"/sd/cw_read"
 
         # Sort files, oldest to newest
         read_files = self.get_sorted_files(cw_read_dir)
         files = self.get_sorted_files(cw_dir)
 
+        self.debug("Checking files to see if we have too many")
         # Make sure each dir doesn't have too many files
         read_files = self.delete_extra_files(read_files, cw_read_dir)
         files = self.delete_extra_files(files, cw_dir)
