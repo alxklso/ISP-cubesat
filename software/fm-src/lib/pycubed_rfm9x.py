@@ -291,7 +291,7 @@ class RFM9x:
         # Defaults set modem config to RadioHead compatible Bw125Cr45Sf128 mode.
         self.signal_bandwidth = 125000
         self.coding_rate = code_rate
-        self.spreading_factor = 7
+        self.spreading_factor = 9
         # Default to disable CRC checking on incoming packets.
         self.enable_crc = False
         # Note no sync word is set for LoRa mode either!
