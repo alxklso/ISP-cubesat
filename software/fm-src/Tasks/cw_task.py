@@ -56,7 +56,10 @@ class task(Task):
             
             with open(self.data_file, "ab") as f:
                 startTime = time.time()
-                while (time.time() - startTime) < (60*3):
+                recording_time = 60*3
+                if self.cubesat.benchtop_testing:
+                    recording_time = 10
+                while (time.time() - startTime) < recording_time:
                     #time with corresponding voltage
                     readings = {
                         "t": supervisor.ticks_ms(),
