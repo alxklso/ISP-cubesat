@@ -105,7 +105,7 @@ class task(Task):
         if self.cubesat.hardware["SDcard"]:
             files = []
             try:
-                files = [f for f in os.listdir("/sd/cw")]
+                files = [f"/sd/cw/{f}" for f in os.listdir("/sd/cw")]
             except:
                 pass
             files.sort()
