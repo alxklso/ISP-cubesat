@@ -52,7 +52,9 @@ if not cubesat.f_burnedAlready:
     # This section of the code is only ever entered once. Once antennas 
     # are deployed, main is run perpetually.
 
-    if cubesat.c_boot > 3 and not cubesat.benchtop_testing:
+    # Count number of burn attempts and if we reach 3 then we move on
+    cubesat.c_burn += 1
+    if cubesat.c_burn >= 5 and not cubesat.benchtop_testing:
         # If we can't burn the wire, then let's just move on to beaconing
         cubesat.f_burnedAlready = True
     
@@ -74,20 +76,21 @@ if not cubesat.f_burnedAlready:
         print("Entering low power mode...")
         cubesat.f_lowbatt = True
         cubesat.powermode("min")
-        sleep_amount = 600
+        sleep_amount = (60*60*1) # Sleep for 1 hour
         if cubesat.benchtop_testing:
-            sleep_amount = 3
+            sleep_amount = 3 # sleep for 3 seconds
         sleep_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_amount)
         # Sleeps the cubesat until the alarm sounds, then it runs main.py again
         alarm.exit_and_deep_sleep_until_alarms(sleep_alarm)
 else:
     print("Startup routine successful! Starting main portion...")
 
-
-    if cubesat.antenna_attached: 
+    if cubesat.antenna_attached:
         start_time = time.monotonic()
-        end_time = start_time + (60*40)
-        while (time.monotonic() < start_time + (60*5)):
+        end_time = start_time + (60*5) # run for 5 mins
+        if cubesat.benchtop_testing:
+            end_time = start_time + 10 # run for 10 seconds
+        while (time.monotonic() < end_time):
             print("Sending identifier beacon...")
             cubesat.radio_send("CoyoteSat boot up successful!")
             time.sleep(60)
