@@ -79,29 +79,32 @@ class task(Task):
                 self.data_file = self.cubesat.new_file("/cw/cw")
 
     def get_sorted_files(self, directory):
+        files = []
         try:
-            files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
-            files.sort()
-            return files
+            if self.cubesat.hardware["SDcard"]:
+                files = [f for f in os.listdir(directory)]
+                files.sort()
         except:
-            return []
+            pass
+        return files
     
     def delete_extra_files(self, file_list, deletion_dir):
         # We only store up to 512 files 
         self.debug(f"We have {len(file_list)} files")
         try:
-            while len(file_list) >= 512:
-                file_to_delete = file_list.pop(0)
-                os.remove(os.path.join(deletion_dir, file_to_delete))
+            if self.cubesat.hardware["SDcard"]:
+                while len(file_list) >= 100:
+                    file_to_delete = file_list.pop(0)
+                    os.remove(f"{deletion_dir}/{file_to_delete}")
         except:
             pass
         return file_list
     
     def delete_file(self, files, directory):
         try:
-            file_to_delete = files.pop(0)
-            os.remove(os.path.join(directory, file_to_delete))
-            dir_size -= os.path.getsize(os.path.join(directory, file_to_delete))
+            if self.cubesat.hardware["SDcard"]:
+                file_to_delete = files.pop(0)
+                os.remove(f"{directory}/{file_to_delete}")
         except:
             pass
         return files

@@ -102,27 +102,28 @@ class task(Task):
             print()
     
     def transmit_cw_data(self):
-        files = []
-        try:
-            files = [f for f in os.listdir("/sd/cw") if os.path.isfile(os.path.join("/sd/cw", f))]
-        except:
-            pass
-        files.sort()
+        if self.cubesat.hardware["SDcard"]:
+            files = []
+            try:
+                files = [f for f in os.listdir("/sd/cw")]
+            except:
+                pass
+            files.sort()
 
-        start_time = time.monotonic()
-        end_time = start_time + (60*10) # run for 10 mins at max
+            start_time = time.monotonic()
+            end_time = start_time + (60*10) # run for 10 mins at max
 
-        print(f"\nSend CW data file")
-        for file in files:
-            with open(file, "rb") as f:
-                chunk = f.read(32) # Each reading is 32 bytes when encoded
-                while chunk:
-                    # We could send bigger chunks, radio packet can take 252 bytes
-                    self.cubesat.radio_send(chunk)
-                    print(chunk)
-                    chunk = f.read(32)
-            # Move to read directory when we have sent it
-            os.rename(file, file.replace("cw", "cw_read"))
-            # If we time out let's stop reading
-            if time.monotonic() > end_time:
-                break
+            print(f"\nSend CW data file")
+            for file in files:
+                with open(file, "rb") as f:
+                    chunk = f.read(32) # Each reading is 32 bytes when encoded
+                    while chunk:
+                        # We could send bigger chunks, radio packet can take 252 bytes
+                        self.cubesat.radio_send(chunk)
+                        print(chunk)
+                        chunk = f.read(32)
+                # Move to read directory when we have sent it
+                os.rename(file, file.replace("cw", "cw_read"))
+                # If we time out let's stop reading
+                if time.monotonic() > end_time:
+                    break
