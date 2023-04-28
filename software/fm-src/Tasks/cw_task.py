@@ -41,35 +41,38 @@ class task(Task):
         self.chan = AnalogIn(self.ads, ADS.P0)
 
     async def main_task(self):
-        self.check_and_delete_files()
-        data_file = self.cubesat.new_file("/cw/cw", binary = True)
+        try:
+            self.check_and_delete_files()
+            data_file = self.cubesat.new_file("/cw/cw", binary = True)
 
-        if data_file is not None:
-            self.debug("Starting measurements")
-            
-            with open(data_file, "ab") as f:
-                startTime = time.time()
-                recording_time = 60*3
-                if self.cubesat.benchtop_testing:
-                    recording_time = 10
-                while (time.time() - startTime) < recording_time:
-                    #time with corresponding voltage
-                    readings = {
-                        "t": supervisor.ticks_ms(),
-                        "vlt": self.chan.voltage,
-                        "val": self.chan.value
-                    }
-                    #prints measured voltage of AnalogIn channel connected to ADS1115 at current time
-                    self.debug(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
-                    msgpack.pack(readings, f)
-                    time.sleep(1)
+            if data_file is not None:
+                self.debug("Starting measurements")
+                
+                with open(data_file, "ab") as f:
+                    startTime = time.time()
+                    recording_time = 60*3
+                    if self.cubesat.benchtop_testing:
+                        recording_time = 10
+                    while (time.time() - startTime) < recording_time:
+                        #time with corresponding voltage
+                        readings = {
+                            "t": supervisor.ticks_ms(),
+                            "vlt": self.chan.voltage,
+                            "val": self.chan.value
+                        }
+                        #prints measured voltage of AnalogIn channel connected to ADS1115 at current time
+                        self.debug(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
+                        msgpack.pack(readings, f)
+                        time.sleep(1)
 
-            # Check if the file is getting bigger than we'd like
-            if stat(data_file)[6] >= 128: # Bytes
-                with open(data_file, "rb") as f:
-                    while True:
-                        try: print("\t", msgpack.unpack(f))
-                        except: break
+                # Check if the file is getting bigger than we'd like
+                if stat(data_file)[6] >= 128: # Bytes
+                    with open(data_file, "rb") as f:
+                        while True:
+                            try: print("\t", msgpack.unpack(f))
+                            except: break
+        except:
+            pass
 
     def get_sorted_files(self, directory):
         files = []
