@@ -132,9 +132,9 @@ else:
         task_priority = task_obj.priority
         task_frequency = task_obj.frequency
         if cubesat.benchtop_testing:
-            task_frequency = task_obj.frequency
+            task_frequency = task_obj.testing_frequency
 
-        cubesat.scheduled_tasks[task_obj.name]=schedule(task_obj.frequency, task_obj.main_task, task_obj.priority)
+        cubesat.scheduled_tasks[task_obj.name]=schedule(task_frequency, main_task, task_priority)
 
     if cubesat.benchtop_testing:
         showScheduledTasks()
