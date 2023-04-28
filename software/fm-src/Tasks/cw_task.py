@@ -18,8 +18,8 @@ is saved in JSON format and uses the msgpack library.
 Data measurement scheme:
 
     measurement = {
-        "t" : unix epoch time,
-        "vlt" : cw voltage meausurement
+        "t" : time in ms,
+        "vlt" : cw voltage meausurement,
         "val" : cw value measurement
     }
 """
@@ -30,7 +30,6 @@ class task(Task):
     testing_frequency = 1/20
     name = "cosmic watch"
     color = "gray"
-    data_file = None
     sensor = None
     schedule_later = False
 
@@ -40,19 +39,15 @@ class task(Task):
         super().__init__(satellite)
         self.ads= ADS.ADS1115(self.cubesat.i2c2)
         self.chan = AnalogIn(self.ads, ADS.P0)
-        self.check_and_delete_files()
-        self.data_file = self.cubesat.new_file("/cw/cw", binary = True)
 
     async def main_task(self):
         self.check_and_delete_files()
-        if self.data_file is not None:
-            # Create start time using UNIX epoch time 
-            # Used for file naming and to check when the task is finished
-            # TODO: Change code from veml7700 to code from CW's ADC library 
-            # https://github.com/adafruit/Adafruit_CircuitPython_ADS1x15
+        data_file = self.cubesat.new_file("/cw/cw", binary = True)
+
+        if data_file is not None:
             self.debug("Starting measurements")
             
-            with open(self.data_file, "ab") as f:
+            with open(data_file, "ab") as f:
                 startTime = time.time()
                 recording_time = 60*3
                 if self.cubesat.benchtop_testing:
@@ -70,13 +65,11 @@ class task(Task):
                     time.sleep(1)
 
             # Check if the file is getting bigger than we'd like
-            if stat(self.data_file)[6] >= 128: # Bytes
-                with open(self.data_file, "rb") as f:
+            if stat(data_file)[6] >= 128: # Bytes
+                with open(data_file, "rb") as f:
                     while True:
                         try: print("\t", msgpack.unpack(f))
                         except: break
-
-                self.data_file = self.cubesat.new_file("/cw/cw")
 
     def get_sorted_files(self, directory):
         files = []
@@ -89,15 +82,11 @@ class task(Task):
         return files
     
     def delete_extra_files(self, file_list):
-        # We only store up to 512 files 
-        max_files = 512
-        if self.cubesat.benchtop_testing:
-            max_files = 3
         
         self.debug(f"We have {len(file_list)} files")
         try:
             if self.cubesat.hardware["SDcard"]:
-                while len(file_list) >= max_files:
+                while len(file_list) > 0:
                     file_to_delete = file_list.pop(0)
                     self.debug(f"Deleting: {file_to_delete}")
                     os.remove(file_to_delete)
@@ -107,13 +96,10 @@ class task(Task):
 
     def check_and_delete_files(self):
         cw_dir = f"/sd/cw"
-        cw_read_dir = f"/sd/cw_read"
 
         # Sort files, oldest to newest
-        read_files = self.get_sorted_files(cw_read_dir)
         files = self.get_sorted_files(cw_dir)
 
         self.debug("Checking files to see if we have too many")
         # Make sure each dir doesn't have too many files
-        read_files = self.delete_extra_files(read_files)
         files = self.delete_extra_files(files)

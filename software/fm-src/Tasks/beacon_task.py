@@ -46,7 +46,7 @@ class task(Task):
 
             self.debug("Listening for response (non-blocking)")
             self.cubesat.radio1.listen()
-            listen_timeout = 2400
+            listen_timeout = 120
             if self.cubesat.benchtop_testing:
                 listen_timeout = 60
             heard_something = await self.cubesat.radio1.await_rx(timeout = listen_timeout)
@@ -121,14 +121,6 @@ class task(Task):
                         # We could send bigger chunks, radio packet can take 252 bytes
                         self.cubesat.radio_send(chunk)
                         chunk = f.read(32)
-                # Move to read directory when we have sent it
-                try:
-                    os.rename(file, file.replace("cw", "cw_read"))
-                except OSError:
-                    try:
-                        os.mkdir("/sd/cw_read")
-                    except:
-                        break
                 # If we time out let's stop reading
                 if time.monotonic() > end_time:
                     break
