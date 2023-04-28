@@ -115,22 +115,3 @@ class task(Task):
         # Make sure each dir doesn't have too many files
         read_files = self.delete_extra_files(read_files, cw_read_dir)
         files = self.delete_extra_files(files, cw_dir)
-        
-        # File deletion logic
-        # How much space is remaining:
-        fs_stats = os.statvfs('/sd')
-        available_space = fs_stats.f_bavail * fs_stats.f_frsize
-        print(f"Remaining space is {available_space}")
-        
-        # If less than 1 MB of space remaining, delete the files one by one until there is enough space left
-        if available_space <= 1000000:
-            print("Deleting files from SD card...")
-            #delete files until we have enough space
-            while available_space < 1000000:
-                if len(read_files) == 0 and len(read_files) == 0:
-                    break
-                
-                if len(read_files) > 0:
-                    read_files = self.delete_file(read_files, cw_read_dir)
-                if len(files) > 0:
-                    files = self.delete_file(files, cw_dir)
