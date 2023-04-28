@@ -34,7 +34,7 @@ class task(Task):
     sensor = None
     schedule_later = False
 
-    cw_dir = "/cw"
+    cw_path = "/cw"
 
     # Initialize data file only once upon boot
     # So perform our task init and use that as a chance to init the data files
@@ -43,7 +43,7 @@ class task(Task):
         self.ads= ADS.ADS1115(self.cubesat.i2c2)
         self.chan = AnalogIn(self.ads, ADS.P0)
         self.check_and_delete_files()
-        self.data_file = self.cubesat.new_file(self.cw_dir, binary = True)
+        self.data_file = self.cubesat.new_file(self.cw_path, binary = True)
 
     async def main_task(self):
         self.check_and_delete_files()
@@ -75,7 +75,7 @@ class task(Task):
                         try: print("\t", msgpack.unpack(f))
                         except: break
 
-                self.data_file = self.cubesat.new_file(self.cw_dir)
+                self.data_file = self.cubesat.new_file(self.cw_path)
 
     def get_sorted_files(self, directory):
         files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
@@ -96,8 +96,8 @@ class task(Task):
         return files
 
     def check_and_delete_files(self):
-        cw_dir = f"/sd/{cw_dir}"
-        cw_read_dir = f"/sd/{cw_dir}_read"
+        cw_dir = f"/sd/{self.cw_path}"
+        cw_read_dir = f"/sd/{self.cw_path}_read"
 
         # Sort files, oldest to newest
         read_files = self.get_sorted_files(cw_read_dir)
