@@ -109,8 +109,8 @@ class task(Task):
         start_time = time.monotonic()
         end_time = start_time + (60*10) # run for 10 mins at max
 
+        print(f"\nSend CW data file")
         for file in files:
-            print(f"\nSend CW data file: {self.data_file}")
             with open(file, "rb") as f:
                 chunk = f.read(32) # Each reading is 32 bytes when encoded
                 while chunk:
