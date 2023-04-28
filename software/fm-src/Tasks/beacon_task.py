@@ -5,7 +5,7 @@ import microcontroller
 from Tasks.template_task import Task
 
 class task(Task):
-    priority = 2
+    priority = 3
     testing_frequency = 1/30 # once every 5 mins, for listening for cmds
     frequency = 1/(60*40) # once every 40 mins, for listening for cmds
     name = "beacon"
