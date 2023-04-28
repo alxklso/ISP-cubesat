@@ -99,7 +99,11 @@ class task(Task):
             print()
     
     def transmit_cw_data(self):
-        files = [f for f in os.listdir("/sd/cw") if os.path.isfile(os.path.join("/sd/cw", f))]
+        files = []
+        try:
+            files = [f for f in os.listdir("/sd/cw") if os.path.isfile(os.path.join("/sd/cw", f))]
+        except:
+            pass
         files.sort()
 
         start_time = time.monotonic()
