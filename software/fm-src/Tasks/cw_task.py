@@ -1,8 +1,10 @@
 import time, msgpack
+from os import stat
 import os
 from Tasks.template_task import Task
 import adafruit_ads1x15.ads1115 as ADS #ADC import
 from adafruit_ads1x15.analog_in import AnalogIn #ADC collects data from voltage src at pin 0
+import supervisor
 
 """
 FOR BENCHTOP TESTING: Every 2 minutes, this task turns on the Cosmic Watch
@@ -32,6 +34,8 @@ class task(Task):
     sensor = None
     schedule_later = False
 
+    cw_dir = "/cw"
+
     # Initialize data file only once upon boot
     # So perform our task init and use that as a chance to init the data files
     def __init__(self, satellite):
@@ -39,7 +43,7 @@ class task(Task):
         self.ads= ADS.ADS1115(self.cubesat.i2c2)
         self.chan = AnalogIn(self.ads, ADS.P0)
         self.check_and_delete_files()
-        self.data_file = self.cubesat.new_file("/cw", binary = True)
+        self.data_file = self.cubesat.new_file(self.cw_dir, binary = True)
 
     async def main_task(self):
         self.check_and_delete_files()
@@ -49,12 +53,13 @@ class task(Task):
             # TODO: Change code from veml7700 to code from CW's ADC library 
             # https://github.com/adafruit/Adafruit_CircuitPython_ADS1x15
             print("Starting measurements")
+            
             with open(self.data_file, "ab") as f:
                 startTime = time.time()
-                while (time.time() - startTime) < 60:
+                while (time.time() - startTime) < (60*3):
                     #time with corresponding voltage
                     readings = {
-                        "t": time.monotonic(),
+                        "t": supervisor.ticks_ms(),
                         "vlt": self.chan.voltage,
                         "val": self.chan.value
                     }
@@ -64,47 +69,59 @@ class task(Task):
                     time.sleep(1)
 
             # Check if the file is getting bigger than we'd like
-            if stat(self.data_file)[6] >= 256: # Bytes
-                print("File reached 256 bytes... Sending")
-                if self.cubesat.antenna_attached:
-                    print(f"\nSend CW data file: {self.data_file}")
-                    with open(self.data_file, "rb") as f:
-                        chunk = f.read(32) # Each reading is 32 bytes when encoded
-                        while chunk:
-                            # We could send bigger chunks, radio packet can take 252 bytes
-                            self.cubesat.radio_send(chunk)
-                            print(chunk)
-                            chunk = f.read(32)
-                    print("Finished\n")
-                else:
-                    # Print the unpacked data from the file
-                    print(f"\nPrinting CW data file: {self.data_file}")
-                    with open(self.data_file, "rb") as f:
-                        while True:
-                            try: print("\t", msgpack.unpack(f))
-                            except: break
-                    print("Finished\n")
+            if stat(self.data_file)[6] >= 245: # Bytes
+                with open(self.data_file, "rb") as f:
+                    while True:
+                        try: print("\t", msgpack.unpack(f))
+                        except: break
 
-                self.data_file = self.cubesat.new_file("/cw")
+                self.data_file = self.cubesat.new_file(self.cw_dir)
+
+    def get_sorted_files(self, directory):
+        files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+        files.sort()
+        return files
+    
+    def delete_extra_files(self, file_list, deletion_dir):
+        # We only store up to 512 files 
+        while len(file_list) >= 512:
+            file_to_delete = file_list.pop(0)
+            os.remove(os.path.join(deletion_dir, file_to_delete))
+        return file_list
+    
+    def delete_file(self, files, directory):
+        file_to_delete = files.pop(0)
+        os.remove(os.path.join(directory, file_to_delete))
+        dir_size -= os.path.getsize(os.path.join(directory, file_to_delete))
+        return files
 
     def check_and_delete_files(self):
-        #file deletion logic
-        #how much space is remaining:
+        cw_dir = f"/sd/{cw_dir}"
+        cw_read_dir = f"/sd/{cw_dir}_read"
+
+        # Sort files, oldest to newest
+        read_files = self.get_sorted_files(cw_read_dir)
+        files = self.get_sorted_files(cw_dir)
+
+        # Make sure each dir doesn't have too many files
+        read_files = self.delete_extra_files(read_files)
+        files = self.delete_extra_files(files)
+        
+        # File deletion logic
+        # How much space is remaining:
         fs_stats = os.statvfs('/sd')
         available_space = fs_stats.f_bavail * fs_stats.f_frsize
         print(f"Remaining space is {available_space}")
         
-        #if less than 1 MB of space remaining, delete the files one by one until there is enough space left
+        # If less than 1 MB of space remaining, delete the files one by one until there is enough space left
         if available_space <= 1000000:
             print("Deleting files from SD card...")
-            #sort files, oldest to newest
-            files = [f for f in os.listdir("/sd/cw") if os.path.isfile(os.path.join("/sd/cw", f))]
-            files.sort(key=lambda x: os.path.getmtime(os.path.join("/sd/cw", x)))
-
             #delete files until we have enough space
             while available_space < 1000000:
-                file_to_delete = files.pop(0)
-                os.remove(os.path.join("/sd/cw", file_to_delete))
-                dir_size -= os.path.getsize(os.path.join("/sd/cw", file_to_delete))
-                print(f"Deleted file {file_to_delete}")
-                print(f"Space remaining after deletion: {available_space}")
+                if len(read_files) == 0 and len(read_files) == 0:
+                    break
+                
+                if len(read_files) > 0:
+                    read_files = self.delete_file(read_files, cw_read_dir)
+                if len(files) > 0:
+                    files = self.delete_file(files, cw_dir)
