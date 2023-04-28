@@ -26,7 +26,7 @@ Data measurement scheme:
 
 class task(Task):
     priority = 4
-    frequency = 1/(60*40)
+    frequency = 1/(60*60) # Once an hour
     testing_frequency = 1/20
     name = "cosmic watch"
     color = "gray"

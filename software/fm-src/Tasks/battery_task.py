@@ -7,7 +7,7 @@ to check for low batteries.
 """
 
 class task(Task):
-    priority = 2
+    priority = 3
     frequency = 1/60 # once every 60s
     testing_frequency = 1/30
     name = "vbatt"
