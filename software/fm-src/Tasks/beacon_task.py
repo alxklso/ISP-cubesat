@@ -46,7 +46,10 @@ class task(Task):
 
             self.debug("Listening for response (non-blocking)")
             self.cubesat.radio1.listen()
-            heard_something = await self.cubesat.radio1.await_rx(timeout = 2400)
+            listen_timeout = 2400
+            if self.cubesat.benchtop_testing:
+                listen_timeout = 60
+            heard_something = await self.cubesat.radio1.await_rx(timeout = listen_timeout)
 
             if heard_something:
                 # retrieve response but don't ACK back unless an antenna is attached
