@@ -90,10 +90,14 @@ class task(Task):
     
     def delete_extra_files(self, file_list):
         # We only store up to 512 files 
+        max_files = 512
+        if self.cubesat.benchtop_testing:
+            max_files = 3
+        
         self.debug(f"We have {len(file_list)} files")
         try:
             if self.cubesat.hardware["SDcard"]:
-                while len(file_list) >= 100:
+                while len(file_list) >= max_files:
                     file_to_delete = file_list.pop(0)
                     self.debug(f"Deleting: {file_to_delete}")
                     os.remove(file_to_delete)
