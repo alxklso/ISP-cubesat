@@ -69,7 +69,7 @@ class task(Task):
                     time.sleep(1)
 
             # Check if the file is getting bigger than we'd like
-            if stat(self.data_file)[6] >= 245: # Bytes
+            if stat(self.data_file)[6] >= 128: # Bytes
                 with open(self.data_file, "rb") as f:
                     while True:
                         try: print("\t", msgpack.unpack(f))
