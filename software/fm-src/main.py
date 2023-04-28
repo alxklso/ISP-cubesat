@@ -93,7 +93,10 @@ else:
         while (time.monotonic() < end_time):
             print("Sending identifier beacon...")
             cubesat.radio_send("CoyoteSat boot up successful!")
-            time.sleep(60)
+            if not cubesat.benchtop_testing:
+                time.sleep(60)
+            else:
+                time.sleep(3)
 
     # Schedule tasks
     cubesat.tasko = tasko
