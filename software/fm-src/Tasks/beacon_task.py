@@ -120,7 +120,6 @@ class task(Task):
                     while chunk:
                         # We could send bigger chunks, radio packet can take 252 bytes
                         self.cubesat.radio_send(chunk)
-                        self.debug(chunk)
                         chunk = f.read(32)
                 # Move to read directory when we have sent it
                 try:
