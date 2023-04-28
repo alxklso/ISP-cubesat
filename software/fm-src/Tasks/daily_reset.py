@@ -13,6 +13,7 @@ class task(Task):
     name = "vbatt"
     color = "red"
     timeout = 60*60 # 60 min
+    schedule_later = True
 
     async def main_task(self):
         # If all other fault-handling fails, hard reset the PyCubed
