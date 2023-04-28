@@ -41,7 +41,7 @@ class task(Task):
         self.ads= ADS.ADS1115(self.cubesat.i2c2)
         self.chan = AnalogIn(self.ads, ADS.P0)
         self.check_and_delete_files()
-        self.data_file = self.cubesat.new_file(self.cw_path, binary = True)
+        self.data_file = self.cubesat.new_file("/cw/cw", binary = True)
 
     async def main_task(self):
         self.check_and_delete_files()
@@ -76,7 +76,7 @@ class task(Task):
                         try: print("\t", msgpack.unpack(f))
                         except: break
 
-                self.data_file = self.cubesat.new_file(self.cw_path)
+                self.data_file = self.cubesat.new_file("/cw/cw")
 
     def get_sorted_files(self, directory):
         try:
@@ -88,6 +88,7 @@ class task(Task):
     
     def delete_extra_files(self, file_list, deletion_dir):
         # We only store up to 512 files 
+        self.debug(f"We have {len(file_list)} files")
         try:
             while len(file_list) >= 512:
                 file_to_delete = file_list.pop(0)
