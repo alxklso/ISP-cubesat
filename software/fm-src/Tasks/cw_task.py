@@ -64,13 +64,11 @@ class task(Task):
                         self.debug(f"Measured {readings['vlt']}v and value {readings['val']} at time {time.time()}")
                         msgpack.pack(readings, f)
                         time.sleep(1)
-
-                # Check if the file is getting bigger than we'd like
-                if stat(data_file)[6] >= 128: # Bytes
-                    with open(data_file, "rb") as f:
-                        while True:
-                            try: print("\t", msgpack.unpack(f))
-                            except: break
+                
+                with open(data_file, "rb") as f:
+                    while True:
+                        try: print("\t", msgpack.unpack(f))
+                        except: break
         except:
             pass
 

@@ -117,11 +117,11 @@ class task(Task):
                 self.debug(f"Send CW data file")
                 for file in files:
                     with open(file, "rb") as f:
-                        chunk = f.read(32) # Each reading is 32 bytes when encoded
+                        chunk = f.read(128) # Each reading is 64 bytes when encoded
                         while chunk:
                             # We could send bigger chunks, radio packet can take 252 bytes
                             self.cubesat.radio_send(chunk)
-                            chunk = f.read(32)
+                            chunk = f.read(128)
                     # If we time out let's stop reading
                     if time.monotonic() > end_time:
                         break
