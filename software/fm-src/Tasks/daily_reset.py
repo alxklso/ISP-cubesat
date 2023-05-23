@@ -2,8 +2,7 @@ import time
 from Tasks.template_task import Task
 
 """
-This task checks the battery voltage against a voltage threshold 
-to check for low batteries. 
+This task performs a system hard reset to avoid monotonic drift w/ clock.
 """
 
 class task(Task):

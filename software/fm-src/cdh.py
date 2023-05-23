@@ -1,8 +1,14 @@
 import time
 
 """
-Consider changing these hex commands if everything else is good 
-and we have time. 
+Satellite command & data handling functions.
+
+- no-op: Simple acknowledgement.
+- hreset: Hard reset the satellite.
+- shutdown: Shut down satellite forever.
+- query: Querying satellite. 
+- exec_cmd: Execute specific command.
+
 """
 commands = {
     b'\x8eb': 'no-op',
