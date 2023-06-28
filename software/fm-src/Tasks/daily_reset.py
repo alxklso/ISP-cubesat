@@ -5,7 +5,7 @@ from Tasks.template_task import Task
 This task performs a system hard reset to avoid monotonic drift w/ clock.
 """
 
-class task(Task):
+class task(Task): 
     priority = 1
     frequency = 1/(60*60*24) # once every day
     testing_frequency = 1/(2*60) # once every 5 mins
